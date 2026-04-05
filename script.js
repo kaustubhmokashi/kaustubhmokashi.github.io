@@ -2282,6 +2282,27 @@ if (repairableTitles.length) {
     processRepairQueue();
   };
 
+  const pruneRepairQueue = () => {
+    for (let index = repairQueue.length - 1; index >= 0; index -= 1) {
+      const item = repairQueue[index];
+      const node = item.node;
+      const currentText = getRepairableText(node);
+      const defaultText = repairableTextMap.get(node) || currentText;
+      const currentOffset = getRepairableOffset(node);
+      const textMatches = currentText === defaultText;
+      const positionMatches = Math.abs(currentOffset.x) < 1 && Math.abs(currentOffset.y) < 1;
+
+      if (item.reason === "text" && textMatches) {
+        repairQueue.splice(index, 1);
+        continue;
+      }
+
+      if (item.reason === "move" && positionMatches) {
+        repairQueue.splice(index, 1);
+      }
+    }
+  };
+
   const cancelRepairForNode = (node, { preserveMove = false } = {}) => {
     const pendingTimeout = pendingRepairTimeouts.get(node);
     if (pendingTimeout) {
@@ -2687,6 +2708,7 @@ if (repairableTitles.length) {
 
   const startOrQueueMoveRepair = (node) => {
     resetStaleRepairState();
+    pruneRepairQueue();
 
     if (activeRepair || activeRepairEdit || isMenuBlockingBot()) {
       queueRepair(node, "move");
@@ -2701,6 +2723,7 @@ if (repairableTitles.length) {
 
   const processRepairQueue = () => {
     resetStaleRepairState();
+    pruneRepairQueue();
 
     if (activeRepair || activeRepairEdit || repairQueue.length === 0 || isMenuBlockingBot()) {
       return;
@@ -2730,8 +2753,8 @@ if (repairableTitles.length) {
       return;
     }
 
-      const centerX = currentCenterX;
-      const centerY = currentCenterY;
+    const centerX = currentCenterX;
+    const centerY = currentCenterY;
     const startPoint =
       repairCursorVisible
         ? { x: repairCursorPosition.x, y: repairCursorPosition.y }
@@ -2762,8 +2785,8 @@ if (repairableTitles.length) {
       selectRepairable(node);
       let deleteIndex = currentText.length;
       const origin = repairOriginMap.get(node);
-      const lockedCenterX = origin?.centerX ?? centerX;
-      const lockedCenterY = origin?.centerY ?? centerY;
+      const lockedLeft = origin?.left ?? rect.left - currentOffset.x;
+      const lockedTop = origin?.top ?? rect.top - currentOffset.y;
 
       const sharedPrefixLength = (() => {
         const maxLength = Math.min(currentText.length, defaultText.length);
@@ -2780,7 +2803,7 @@ if (repairableTitles.length) {
       node.style.minWidth = `${rect.width}px`;
       node.style.minHeight = `${rect.height}px`;
       setRepairableText(node, currentText, true);
-      recenterRepairableToPoint(node, lockedCenterX, lockedCenterY);
+      alignRepairableToLeftTop(node, lockedLeft, lockedTop);
 
       const beginRepairDelete = () => {
         if (!activeRepair || activeRepair.node !== node) {
@@ -2794,7 +2817,7 @@ if (repairableTitles.length) {
 
           deleteIndex -= 1;
           setRepairableText(node, currentText.slice(0, deleteIndex), true);
-          recenterRepairableToPoint(node, lockedCenterX, lockedCenterY);
+          alignRepairableToLeftTop(node, lockedLeft, lockedTop);
 
           if (deleteIndex > sharedPrefixLength) {
             const deleteTimeout = window.setTimeout(deleteNextCharacter, 55);
@@ -2811,7 +2834,7 @@ if (repairableTitles.length) {
 
             typeIndex += 1;
             setRepairableText(node, defaultText.slice(0, typeIndex), true);
-            recenterRepairableToPoint(node, lockedCenterX, lockedCenterY);
+            alignRepairableToLeftTop(node, lockedLeft, lockedTop);
 
             if (typeIndex < defaultText.length) {
               const typeTimeout = window.setTimeout(typeNextCharacter, 88);
@@ -2821,7 +2844,7 @@ if (repairableTitles.length) {
 
             clearRepairableEditState(node);
             setRepairableText(node, defaultText);
-            recenterRepairableToPoint(node, lockedCenterX, lockedCenterY);
+            alignRepairableToLeftTop(node, lockedLeft, lockedTop);
             node.style.minWidth = "";
             node.style.minHeight = "";
 
@@ -2857,6 +2880,7 @@ if (repairableTitles.length) {
 
                   returnCursor.classList.remove("is-commenting");
                   ensureAllRepairablesAtDefaultState();
+                  pruneRepairQueue();
 
                   if (repairQueue.length > 0) {
                     activeRepair = null;
