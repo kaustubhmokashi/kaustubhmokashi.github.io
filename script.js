@@ -5,6 +5,7 @@ const returnCursorLabel = document.querySelector(".return-cursor-label");
 const returnCursorPrompt = document.querySelector(".return-cursor-prompt");
 const topMenu = document.querySelector(".top-menu");
 const topMenuToggle = document.querySelector(".top-menu-toggle");
+const pageHeading = document.querySelector(".page-heading");
 const finePointer = window.matchMedia("(pointer: fine)").matches;
 const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
 const LONG_PRESS_EDIT_DELAY_MS = 420;
@@ -109,8 +110,13 @@ const FIRST_IDLE_PROMPT_DELAY_MS = 5000;
 const RECURRING_IDLE_PROMPT_DELAY_MS = 30000;
 const draggableItems = [...document.querySelectorAll(".draggable-item")];
 
-if (cursor && finePointer) {
+if (cursor) {
   const moveCursor = (event) => {
+    if (event.pointerType === "touch") {
+      cursor.style.opacity = "0";
+      return;
+    }
+
     cursor.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
     cursor.style.opacity = "1";
   };
@@ -120,6 +126,11 @@ if (cursor && finePointer) {
   };
 
   const showCursor = (event) => {
+    if (event.pointerType === "touch") {
+      hideCursor();
+      return;
+    }
+
     moveCursor(event);
   };
 
@@ -159,9 +170,30 @@ const hideBlankSelectionBox = () => {
 };
 
 if (topMenu && topMenuToggle) {
+  const updateMobileTogglePinning = () => {
+    if (!coarsePointer || window.innerWidth > 640 || !pageHeading) {
+      topMenuToggle.style.top = "";
+      topMenuToggle.style.transform = "";
+      return;
+    }
+
+    if (document.body.classList.contains("menu-open")) {
+      topMenuToggle.style.top = "";
+      topMenuToggle.style.transform = "";
+      return;
+    }
+
+    const threshold = 32;
+    const headingTop = pageHeading.getBoundingClientRect().top;
+    const offsetY = Math.min(0, headingTop - threshold);
+    topMenuToggle.style.top = "";
+    topMenuToggle.style.transform = `translate3d(0, ${offsetY}px, 0)`;
+  };
+
   const closeMenu = () => {
     document.body.classList.remove("menu-open");
     topMenuToggle.setAttribute("aria-expanded", "false");
+    updateMobileTogglePinning();
   };
 
   topMenuToggle.addEventListener("click", (event) => {
@@ -172,6 +204,7 @@ if (topMenu && topMenuToggle) {
       returnCursor.style.opacity = "0";
       returnCursor.style.transform = "translate3d(-9999px, -9999px, 0)";
     }
+    updateMobileTogglePinning();
   });
 
   topMenu.querySelectorAll("a").forEach((link) => {
@@ -192,7 +225,12 @@ if (topMenu && topMenuToggle) {
     if (!coarsePointer || window.innerWidth > 640) {
       closeMenu();
     }
+    updateMobileTogglePinning();
   });
+
+  window.addEventListener("scroll", updateMobileTogglePinning, { passive: true });
+  window.addEventListener("load", updateMobileTogglePinning);
+  updateMobileTogglePinning();
 }
 
 if (stage && draggableItems.length) {
