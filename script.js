@@ -355,18 +355,26 @@ if (stage && draggableItems.length) {
     originMap.set(firstName, {
       left: firstLeft,
       top,
+      centerX: firstLeft + firstRect.width / 2,
+      centerY: top + firstRect.height / 2,
     });
     originMap.set(secondName, {
       left: secondLeft,
       top: secondTop,
+      centerX: secondLeft + secondRect.width / 2,
+      centerY: secondTop + secondRect.height / 2,
     });
     originMap.set(roleLayer, {
       left: firstLeft + firstRect.width / 2 - roleRect.width / 2,
       top: top - 43 - roleRect.height,
+      centerX: firstLeft + firstRect.width / 2,
+      centerY: top - 43 - roleRect.height / 2,
     });
     originMap.set(captionLayer, {
       left: secondLeft + secondRect.width / 2 - captionRect.width / 2,
       top: secondTop + secondRect.height + captionOffset,
+      centerX: secondLeft + secondRect.width / 2,
+      centerY: secondTop + secondRect.height + captionOffset + captionRect.height / 2,
     });
   };
 
@@ -446,23 +454,64 @@ if (stage && draggableItems.length) {
     };
   };
 
-  const removeQueuedReturn = (node) => {
-    const queueIndex = returnQueue.findIndex((item) => item.node === node);
+  const restoreNodeToDefaultState = (node) => {
+    const defaultText = defaultTextMap.get(node);
+    const origin = originMap.get(node);
 
-    if (queueIndex !== -1) {
-      returnQueue.splice(queueIndex, 1);
+    clearBotState(node);
+    clearTextEditState(node);
+
+    if (typeof defaultText === "string") {
+      setNodeDisplayText(node, defaultText);
+    }
+
+    if (origin) {
+      node.style.left = `${origin.left}px`;
+      node.style.top = `${origin.top}px`;
     }
   };
 
-  const cancelReturnForNode = (node) => {
+  const ensureAllNodesAtDefaultState = () => {
+    draggableItems.forEach((node) => {
+      const pendingTimeout = pendingReturnTimeouts.get(node);
+      const isQueued = returnQueue.some((item) => item.node === node);
+      const isActiveNode = activeReturn?.node === node;
+
+      if (pendingTimeout || isQueued || isActiveNode) {
+        return;
+      }
+
+      restoreNodeToDefaultState(node);
+    });
+  };
+
+  const removeQueuedReturn = (node, reason = null) => {
+    for (let index = returnQueue.length - 1; index >= 0; index -= 1) {
+      const item = returnQueue[index];
+
+      if (item.node !== node) {
+        continue;
+      }
+
+      if (reason && item.reason !== reason) {
+        continue;
+      }
+
+      returnQueue.splice(index, 1);
+    }
+  };
+
+  const cancelReturnForNode = (node, { preserveMove = false } = {}) => {
     const pendingTimeout = pendingReturnTimeouts.get(node);
 
     if (pendingTimeout) {
-      clearTimeout(pendingTimeout);
-      pendingReturnTimeouts.delete(node);
+      if (!(preserveMove && pendingTimeout.reason === "move")) {
+        clearTimeout(pendingTimeout.id);
+        pendingReturnTimeouts.delete(node);
+      }
     }
 
-    removeQueuedReturn(node);
+    removeQueuedReturn(node, preserveMove ? "text" : null);
     clearBotState(node);
 
     if (activeReturn && activeReturn.node === node) {
@@ -609,7 +658,7 @@ if (stage && draggableItems.length) {
   };
 
   const queueReturn = (node, reason) => {
-    removeQueuedReturn(node);
+    removeQueuedReturn(node, reason);
     returnQueue.push({ node, reason });
     processReturnQueue();
   };
@@ -642,7 +691,7 @@ if (stage && draggableItems.length) {
       queueReturn(node, "text");
     }, 1000);
 
-    pendingReturnTimeouts.set(node, timeoutId);
+    pendingReturnTimeouts.set(node, { id: timeoutId, reason: "text" });
   };
 
   const beginTextEdit = (node) => {
@@ -656,7 +705,7 @@ if (stage && draggableItems.length) {
     }
 
     const rect = node.getBoundingClientRect();
-    cancelReturnForNode(node);
+    cancelReturnForNode(node, { preserveMove: true });
     selectName(node);
     node.classList.add("is-text-editing");
     textNode.setAttribute("contenteditable", "true");
@@ -1023,7 +1072,7 @@ if (stage && draggableItems.length) {
   };
 
   const processReturnQueue = () => {
-    if (activeReturn || returnQueue.length === 0 || isMenuBlockingBot()) {
+    if (activeReturn || activeTextEdit || returnQueue.length === 0 || isMenuBlockingBot()) {
       return;
     }
 
@@ -1064,8 +1113,8 @@ if (stage && draggableItems.length) {
         x: current.left + current.width - 10,
         y: current.top + current.height / 2,
       };
-      const lockedCenterX = current.left + current.width / 2;
-      const lockedCenterY = current.top + current.height / 2;
+      const lockedCenterX = origin?.centerX ?? current.left + current.width / 2;
+      const lockedCenterY = origin?.centerY ?? current.top + current.height / 2;
 
       animateReturnCursorTo(editPoint, 520, () => {
         if (!activeReturn || activeReturn.node !== node) {
@@ -1161,17 +1210,18 @@ if (stage && draggableItems.length) {
                     return;
                   }
 
-                  const holdTimeout = window.setTimeout(() => {
-                    if (!activeReturn || activeReturn.node !== node) {
-                      return;
-                    }
+                    const holdTimeout = window.setTimeout(() => {
+                      if (!activeReturn || activeReturn.node !== node) {
+                        return;
+                      }
 
-                    returnCursor.classList.remove("is-commenting");
+                      returnCursor.classList.remove("is-commenting");
+                      ensureAllNodesAtDefaultState();
 
-                    if (returnQueue.length > 0) {
-                      activeReturn = null;
-                      processReturnQueue();
-                      return;
+                      if (returnQueue.length > 0) {
+                        activeReturn = null;
+                        processReturnQueue();
+                        return;
                     }
 
                     const exitPoint = getRandomEdgePoint(editPoint.x, editPoint.y);
@@ -1186,6 +1236,14 @@ if (stage && draggableItems.length) {
                     );
                     const exitStart = performance.now();
                     const exitDuration = 560;
+                    const exitFallback = window.setTimeout(() => {
+                      if (activeReturn === helperState) {
+                        activeReturn = null;
+                      }
+                      hideReturnCursor();
+                      processReturnQueue();
+                    }, exitDuration + 80);
+                    helperState.timeouts.push(exitFallback);
 
                     const animateExit = (exitNow) => {
                       const exitProgress = Math.min((exitNow - exitStart) / exitDuration, 1);
@@ -1205,6 +1263,7 @@ if (stage && draggableItems.length) {
                       }
 
                       activeReturn = null;
+                      clearTimeout(exitFallback);
                       hideReturnCursor();
                       processReturnQueue();
                     };
@@ -1395,6 +1454,7 @@ if (stage && draggableItems.length) {
                       if (returnCursorComment) {
                         returnCursorComment.textContent = fullComment;
                       }
+                      ensureAllNodesAtDefaultState();
                       activeReturn = null;
 
                       if (returnQueue.length > 0) {
@@ -1411,6 +1471,11 @@ if (stage && draggableItems.length) {
                       );
                       const exitStart = performance.now();
                       const exitDuration = 420;
+                      const exitFallback = window.setTimeout(() => {
+                        hideReturnCursor();
+                        processReturnQueue();
+                      }, exitDuration + 80);
+                      helperState.timeouts.push(exitFallback);
 
                       const animateExit = (exitNow) => {
                         const exitProgress = Math.min((exitNow - exitStart) / exitDuration, 1);
@@ -1429,6 +1494,7 @@ if (stage && draggableItems.length) {
                           return;
                         }
 
+                        clearTimeout(exitFallback);
                         hideReturnCursor();
                         processReturnQueue();
                       };
@@ -1769,7 +1835,7 @@ if (stage && draggableItems.length) {
           queueReturn(node, "move");
         }, 1000);
 
-        pendingReturnTimeouts.set(node, timeoutId);
+        pendingReturnTimeouts.set(node, { id: timeoutId, reason: "move" });
         scheduleIdlePrompt();
       };
 
