@@ -240,19 +240,19 @@ body.menu-open .top-menu-toggle span:nth-child(3) {
 
 .page-shell {
   min-height: 100vh;
-  padding: 132px 32px 48px;
+  padding: 100px 32px 48px 100px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 
 .page-panel {
-  width: min(100%, 820px);
+  width: min(100%, 1200px);
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 20px;
-  text-align: center;
+  text-align: left;
 }
 
 .page-kicker {
@@ -274,11 +274,13 @@ body.menu-open .top-menu-toggle span:nth-child(3) {
   font-weight: 400;
   line-height: 0.92;
   letter-spacing: 0;
+  max-width: calc(100vw - 132px);
+  white-space: normal;
 }
 
 .page-copy {
   margin: 0;
-  max-width: 620px;
+  max-width: 920px;
   color: rgba(236, 236, 236, 0.72);
   font-family: "Inter", sans-serif;
   font-size: clamp(16px, 2.2vw, 20px);
@@ -744,7 +746,11 @@ body.menu-open .top-menu-toggle span:nth-child(3) {
   }
 
   .page-shell {
-    padding-top: 120px;
+    padding: 100px 32px 48px;
+  }
+
+  .page-copy {
+    display: none;
   }
 }
 
