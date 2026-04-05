@@ -3,6 +3,8 @@ const returnCursor = document.querySelector(".return-cursor");
 const returnCursorComment = document.querySelector(".return-cursor-comment");
 const returnCursorLabel = document.querySelector(".return-cursor-label");
 const returnCursorPrompt = document.querySelector(".return-cursor-prompt");
+const topMenu = document.querySelector(".top-menu");
+const topMenuToggle = document.querySelector(".top-menu-toggle");
 const finePointer = window.matchMedia("(pointer: fine)").matches;
 const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
 const LONG_PRESS_EDIT_DELAY_MS = 420;
@@ -131,6 +133,44 @@ const stage = document.querySelector(".hero-nameplate");
 const dragGuideLine = document.querySelector(".drag-guide-line");
 const dragGuideLabel = document.querySelector(".drag-guide-label");
 const dragGuideText = document.querySelector(".drag-guide-text");
+const isMenuBlockingBot = () => coarsePointer && document.body.classList.contains("menu-open");
+
+if (topMenu && topMenuToggle) {
+  const closeMenu = () => {
+    document.body.classList.remove("menu-open");
+    topMenuToggle.setAttribute("aria-expanded", "false");
+  };
+
+  topMenuToggle.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const isOpen = document.body.classList.toggle("menu-open");
+    topMenuToggle.setAttribute("aria-expanded", String(isOpen));
+    if (isOpen && returnCursor) {
+      returnCursor.style.opacity = "0";
+      returnCursor.style.transform = "translate3d(-9999px, -9999px, 0)";
+    }
+  });
+
+  topMenu.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", closeMenu);
+  });
+
+  document.addEventListener("pointerdown", (event) => {
+    if (
+      document.body.classList.contains("menu-open") &&
+      !event.target.closest(".top-menu") &&
+      !event.target.closest(".top-menu-toggle")
+    ) {
+      closeMenu();
+    }
+  });
+
+  window.addEventListener("resize", () => {
+    if (!coarsePointer || window.innerWidth > 640) {
+      closeMenu();
+    }
+  });
+}
 
 if (stage && draggableItems.length) {
   const getNodeTextElement = (node) => node.querySelector(".editable-text");
@@ -543,12 +583,12 @@ if (stage && draggableItems.length) {
   const scheduleIdlePrompt = () => {
     window.clearTimeout(idleTimerId);
 
-    if (activeReturn || isIdlePromptRunning) {
+    if (activeReturn || isIdlePromptRunning || isMenuBlockingBot()) {
       return;
     }
 
     idleTimerId = window.setTimeout(() => {
-      if (activeReturn || isIdlePromptRunning) {
+      if (activeReturn || isIdlePromptRunning || isMenuBlockingBot()) {
         return;
       }
 
@@ -876,7 +916,7 @@ if (stage && draggableItems.length) {
   };
 
   const processReturnQueue = () => {
-    if (activeReturn || returnQueue.length === 0) {
+    if (activeReturn || returnQueue.length === 0 || isMenuBlockingBot()) {
       return;
     }
 
