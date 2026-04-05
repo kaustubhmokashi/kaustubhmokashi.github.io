@@ -2,28 +2,82 @@ const cursor = document.querySelector(".personal-cursor");
 const returnCursor = document.querySelector(".return-cursor");
 const returnCursorComment = document.querySelector(".return-cursor-comment");
 const returnCursorLabel = document.querySelector(".return-cursor-label");
+const returnCursorPrompt = document.querySelector(".return-cursor-prompt");
 const finePointer = window.matchMedia("(pointer: fine)").matches;
-const creatorMessages = [
-  "Oops, let me put that back.",
-  "I liked it a little better here.",
-  "Just fixing my tiny detail.",
-  "That spot felt right to me.",
-  "Let's keep it this way.",
-  "I saved its favorite place.",
-  "Putting that back gently.",
-  "I think it lives here.",
-  "Just a small designer instinct.",
-  "Let me neaten that up.",
-  "Back where it feels happy.",
-  "I'll keep this one here.",
-  "A tiny adjustment from me.",
-  "This place suits it more.",
-  "Just returning it home.",
-  "I'm attached to this placement.",
-  "Keeping the layout cozy.",
-  "That looked nicest right here.",
-  "A soft reset by Kaustubh.",
-  "I promise this spot works.",
+const creatorMessageTiers = [
+  [
+    "Oops, let me put that back.",
+    "I liked it a little better here.",
+    "Just fixing my tiny detail.",
+    "That spot felt right to me.",
+    "Let's keep it this way.",
+    "Putting that back gently.",
+    "I think it lives here.",
+    "Just a little designer instinct.",
+    "I saved its favorite spot.",
+    "That one feels happier here.",
+    "Let me keep this tidy.",
+    "I had a soft reason for that.",
+    "Back to its cozy corner.",
+    "This placement still wins for me.",
+    "I promise it looks calmer here.",
+    "Just helping it settle back in.",
+    "That one belongs right here.",
+    "A tiny reset from me.",
+    "I'm keeping this one in place.",
+    "There, much better again.",
+  ],
+  [
+    "You move it, I moisturize the layout.",
+    "That was a plot twist. I fixed it.",
+    "Tiny chaos detected. Carry on.",
+    "I gave it a better seat again.",
+    "This pixel has union protection.",
+    "Let me quietly undo that adventure.",
+    "We tried something. We learned.",
+    "That move had confidence. Not accuracy.",
+    "I respect the curiosity. I reject the result.",
+    "This is now a supervised interaction.",
+    "A brave choice. A reversible one.",
+    "You nudged it. I spiritually disagreed.",
+    "The layout flinched, so I helped.",
+    "That was experimental. This is intentional.",
+    "I heard the spacing gasp.",
+    "You explored. I restored.",
+    "I’m keeping the drama low and the alignment high.",
+    "That was cute. I corrected it.",
+    "The composition filed a complaint.",
+    "I brought the pixel back to its family.",
+  ],
+  [
+    "At this point we're co-designing, and I'm winning.",
+    "You keep moving it like it pays rent.",
+    "This layout and I are in a committed relationship.",
+    "I love your energy. The answer is still no.",
+    "We're really exploring every wrong option together.",
+    "I admire the persistence. So does the undo spirit.",
+    "If this keeps up, I'm adding security.",
+    "We have now entered playful sabotage territory.",
+    "I moved it back with extra conviction this time.",
+    "You test the limits. I test the snap-back.",
+    "This is less drag and more character development.",
+    "The layout knows what you did.",
+    "I can do this all day, politely.",
+    "You move it. I parent it.",
+    "At this rate, the pixel will start recognizing you.",
+    "We’re building a beautiful trust issue.",
+    "You really said 'what if chaos,' huh.",
+    "I’m not upset. I’m just returning it again.",
+    "The spacing gods remain unconvinced.",
+    "I appreciate the commitment to being incorrect.",
+  ],
+];
+const idlePrompts = [
+  "Try moving it.",
+  "Go on, drag it.",
+  "You can move this.",
+  "Give it a little nudge.",
+  "Try touching the layout.",
 ];
 
 if (cursor && finePointer) {
@@ -56,6 +110,10 @@ if (stage && draggableNames.length) {
   let selectedName = null;
   let hasPositionedNames = false;
   let hasUserMovedName = false;
+  let totalMoveCount = 0;
+  let idleTimerId = 0;
+  let idleDelayMs = 5000;
+  let isIdlePromptRunning = false;
   let returnCursorVisible = false;
   let returnCursorPosition = { x: -9999, y: -9999 };
   const originMap = new Map();
@@ -117,9 +175,13 @@ if (stage && draggableNames.length) {
       return;
     }
 
+    returnCursor.classList.remove("is-prompting");
     returnCursor.classList.remove("is-commenting");
     if (returnCursorComment) {
       returnCursorComment.textContent = returnCursorComment.dataset.fullComment || "";
+    }
+    if (returnCursorPrompt) {
+      returnCursorPrompt.textContent = idlePrompts[0];
     }
     if (returnCursorLabel) {
       returnCursorLabel.style.opacity = "1";
@@ -264,6 +326,211 @@ if (stage && draggableNames.length) {
     }
   };
 
+  const getCreatorMessage = () => {
+    const tierIndex =
+      totalMoveCount <= 1 ? 0 : totalMoveCount <= 3 ? 1 : 2;
+    const messages = creatorMessageTiers[tierIndex];
+
+    return messages[Math.floor(Math.random() * messages.length)];
+  };
+
+  const scheduleIdlePrompt = () => {
+    window.clearTimeout(idleTimerId);
+
+    if (activeReturn || isIdlePromptRunning) {
+      return;
+    }
+
+    idleTimerId = window.setTimeout(() => {
+      if (activeReturn || isIdlePromptRunning) {
+        return;
+      }
+
+      const targetNode =
+        draggableNames[Math.floor(Math.random() * draggableNames.length)];
+      const targetPosition = getElementPosition(targetNode);
+      const targetCenter = {
+        x: targetPosition.left + targetPosition.width / 2,
+        y: targetPosition.top + targetPosition.height / 2,
+      };
+      const startPoint = getRandomEdgePoint(targetCenter.x, targetCenter.y);
+      const endPoint = {
+        x: targetCenter.x + 10,
+        y: targetCenter.y + 6,
+      };
+      const controlPoint = getCurveControlPoint(startPoint, endPoint, 0.18);
+      const idleState = {
+        node: targetNode,
+        frameId: 0,
+        timeouts: [],
+      };
+
+      isIdlePromptRunning = true;
+      activeReturn = idleState;
+      positionReturnCursor(startPoint.x, startPoint.y);
+
+      const approachStart = performance.now();
+      const approachDuration = 900;
+
+      const animateApproach = (now) => {
+        const progress = Math.min((now - approachStart) / approachDuration, 1);
+        const eased = 1 - (1 - progress) * (1 - progress) * (1 - progress);
+        const nextPoint = getQuadraticPoint(startPoint, controlPoint, endPoint, eased);
+
+        positionReturnCursor(nextPoint.x, nextPoint.y);
+
+        if (progress < 1) {
+          idleState.frameId = requestAnimationFrame(animateApproach);
+          return;
+        }
+
+        selectName(targetNode);
+        targetNode.classList.add("is-bot-hover");
+        returnCursor.classList.add("is-prompting");
+        const idlePrompt =
+          idlePrompts[Math.floor(Math.random() * idlePrompts.length)];
+
+        if (returnCursorPrompt) {
+          returnCursorPrompt.textContent = "";
+        }
+
+        const promptTimeout = window.setTimeout(() => {
+          if (!activeReturn || activeReturn.node !== targetNode) {
+            return;
+          }
+
+          const fullPrompt = idlePrompt;
+          let charIndex = 0;
+
+          const typeNextPromptCharacter = () => {
+            if (!activeReturn || activeReturn.node !== targetNode || !returnCursorPrompt) {
+              return;
+            }
+
+            charIndex += 1;
+            returnCursorPrompt.textContent = fullPrompt.slice(0, charIndex);
+
+            if (charIndex < fullPrompt.length) {
+              const typingTimeout = window.setTimeout(typeNextPromptCharacter, 45);
+              idleState.timeouts.push(typingTimeout);
+              return;
+            }
+
+            targetNode.classList.remove("is-bot-hover");
+            targetNode.classList.add("is-bot-pressing");
+
+            const currentLeft = Number.parseFloat(targetNode.style.left) || targetPosition.left;
+            const currentTop = Number.parseFloat(targetNode.style.top) || targetPosition.top;
+            const nudgeLeft = currentLeft + Math.min(8, window.innerWidth * 0.012);
+            const nudgeTop = currentTop - Math.min(4, window.innerHeight * 0.008);
+            const nudgeCenter = {
+              x: nudgeLeft + targetPosition.width / 2,
+              y: nudgeTop + targetPosition.height / 2,
+            };
+
+            setDragGuide(targetCenter.x, targetCenter.y, nudgeCenter.x, nudgeCenter.y);
+
+            const nudgeStart = performance.now();
+            const nudgeDuration = 320;
+            const nudgeControl = getCurveControlPoint(targetCenter, nudgeCenter, 0.1);
+
+            const animateNudgeOut = (nudgeNow) => {
+              const nudgeProgress = Math.min((nudgeNow - nudgeStart) / nudgeDuration, 1);
+              const easedNudge = 1 - (1 - nudgeProgress) * (1 - nudgeProgress);
+              const nextPoint = getQuadraticPoint(
+                targetCenter,
+                nudgeControl,
+                nudgeCenter,
+                easedNudge
+              );
+
+              targetNode.style.left = `${nextPoint.x - targetPosition.width / 2}px`;
+              targetNode.style.top = `${nextPoint.y - targetPosition.height / 2}px`;
+              positionReturnCursor(nextPoint.x, nextPoint.y);
+              setDragGuide(targetCenter.x, targetCenter.y, nextPoint.x, nextPoint.y);
+
+              if (nudgeProgress < 1) {
+                idleState.frameId = requestAnimationFrame(animateNudgeOut);
+                return;
+              }
+
+              const returnStart = performance.now();
+              const returnControl = getCurveControlPoint(nudgeCenter, targetCenter, 0.1);
+
+              const animateNudgeBack = (returnNow) => {
+                const returnProgress = Math.min((returnNow - returnStart) / nudgeDuration, 1);
+                const easedReturn = 1 - (1 - returnProgress) * (1 - returnProgress);
+                const nextPoint = getQuadraticPoint(
+                  nudgeCenter,
+                  returnControl,
+                  targetCenter,
+                  easedReturn
+                );
+
+                targetNode.style.left = `${nextPoint.x - targetPosition.width / 2}px`;
+                targetNode.style.top = `${nextPoint.y - targetPosition.height / 2}px`;
+                positionReturnCursor(nextPoint.x, nextPoint.y);
+                setDragGuide(targetCenter.x, targetCenter.y, nextPoint.x, nextPoint.y);
+
+                if (returnProgress < 1) {
+                  idleState.frameId = requestAnimationFrame(animateNudgeBack);
+                  return;
+                }
+
+                targetNode.style.left = `${currentLeft}px`;
+                targetNode.style.top = `${currentTop}px`;
+                targetNode.classList.remove("is-bot-pressing");
+                returnCursor.classList.remove("is-prompting");
+                clearDragGuide();
+
+                const exitPoint = getRandomEdgePoint(targetCenter.x, targetCenter.y);
+                const exitControl = getCurveControlPoint(targetCenter, exitPoint, 0.18);
+                const exitStart = performance.now();
+                const exitDuration = 700;
+
+                const animateExit = (exitNow) => {
+                  const exitProgress = Math.min((exitNow - exitStart) / exitDuration, 1);
+                  const easedExit = 1 - (1 - exitProgress) * (1 - exitProgress);
+                  const nextPoint = getQuadraticPoint(
+                    targetCenter,
+                    exitControl,
+                    exitPoint,
+                    easedExit
+                  );
+
+                  positionReturnCursor(nextPoint.x, nextPoint.y);
+
+                  if (exitProgress < 1) {
+                    idleState.frameId = requestAnimationFrame(animateExit);
+                    return;
+                  }
+
+      activeReturn = null;
+      isIdlePromptRunning = false;
+      hideReturnCursor();
+      idleDelayMs *= 2;
+      scheduleIdlePrompt();
+    };
+
+    idleState.frameId = requestAnimationFrame(animateExit);
+  };
+
+              idleState.frameId = requestAnimationFrame(animateNudgeBack);
+            };
+
+            idleState.frameId = requestAnimationFrame(animateNudgeOut);
+          };
+
+          typeNextPromptCharacter();
+        }, 900);
+
+        idleState.timeouts.push(promptTimeout);
+      };
+
+      idleState.frameId = requestAnimationFrame(animateApproach);
+    }, idleDelayMs);
+  };
+
   const processReturnQueue = () => {
     if (activeReturn || returnQueue.length === 0) {
       return;
@@ -397,85 +664,94 @@ if (stage && draggableNames.length) {
 
               clearBotState(node);
               returnCursor.classList.add("is-commenting");
-              const fullComment =
-                creatorMessages[Math.floor(Math.random() * creatorMessages.length)];
+              const fullComment = getCreatorMessage();
 
               const startTypingSequence = () => {
                 if (!activeReturn || activeReturn.node !== node || !returnCursorComment) {
                   return;
                 }
 
-                returnCursorComment.textContent = "";
-                let charIndex = 0;
+                returnCursorComment.textContent = "...";
 
-                const typeNextCharacter = () => {
+                const indicatorTimeout = window.setTimeout(() => {
                   if (!activeReturn || activeReturn.node !== node || !returnCursorComment) {
                     return;
                   }
 
-                  charIndex += 1;
-                  returnCursorComment.textContent = fullComment.slice(0, charIndex);
+                  returnCursorComment.textContent = "";
+                  let charIndex = 0;
 
-                  if (charIndex < fullComment.length) {
-                    const typingTimeout = window.setTimeout(typeNextCharacter, 40);
-                    helperState.timeouts.push(typingTimeout);
-                    return;
-                  }
-
-                  const holdTimeout = window.setTimeout(() => {
-                    if (!activeReturn || activeReturn.node !== node) {
+                  const typeNextCharacter = () => {
+                    if (!activeReturn || activeReturn.node !== node || !returnCursorComment) {
                       return;
                     }
 
-                    returnCursor.classList.remove("is-commenting");
-                    if (returnCursorComment) {
-                      returnCursorComment.textContent = fullComment;
-                    }
-                    activeReturn = null;
+                    charIndex += 1;
+                    returnCursorComment.textContent = fullComment.slice(0, charIndex);
 
-                    if (returnQueue.length > 0) {
-                      processReturnQueue();
+                    if (charIndex < fullComment.length) {
+                      const typingTimeout = window.setTimeout(typeNextCharacter, 40);
+                      helperState.timeouts.push(typingTimeout);
                       return;
                     }
 
-                    const exitPoint = getRandomEdgePoint(finalCenterX, finalCenterY);
-                    const exitStartPoint = { x: returnCursorPosition.x, y: returnCursorPosition.y };
-                    const exitControlPoint = getCurveControlPoint(
-                      exitStartPoint,
-                      exitPoint,
-                      0.2
-                    );
-                    const exitStart = performance.now();
-                    const exitDuration = 420;
-
-                    const animateExit = (exitNow) => {
-                      const exitProgress = Math.min((exitNow - exitStart) / exitDuration, 1);
-                      const easedExit = 1 - (1 - exitProgress) * (1 - exitProgress);
-                      const nextPoint = getQuadraticPoint(
-                        exitStartPoint,
-                        exitControlPoint,
-                        exitPoint,
-                        easedExit
-                      );
-
-                      positionReturnCursor(nextPoint.x, nextPoint.y);
-
-                      if (exitProgress < 1) {
-                        helperState.frameId = requestAnimationFrame(animateExit);
+                    const holdTimeout = window.setTimeout(() => {
+                      if (!activeReturn || activeReturn.node !== node) {
                         return;
                       }
 
-                      hideReturnCursor();
-                      processReturnQueue();
-                    };
+                      returnCursor.classList.remove("is-commenting");
+                      if (returnCursorComment) {
+                        returnCursorComment.textContent = fullComment;
+                      }
+                      activeReturn = null;
 
-                    helperState.frameId = requestAnimationFrame(animateExit);
-                  }, 2000);
+                      if (returnQueue.length > 0) {
+                        processReturnQueue();
+                        return;
+                      }
 
-                  helperState.timeouts.push(holdTimeout);
-                };
+                      const exitPoint = getRandomEdgePoint(finalCenterX, finalCenterY);
+                      const exitStartPoint = { x: returnCursorPosition.x, y: returnCursorPosition.y };
+                      const exitControlPoint = getCurveControlPoint(
+                        exitStartPoint,
+                        exitPoint,
+                        0.2
+                      );
+                      const exitStart = performance.now();
+                      const exitDuration = 420;
 
-                typeNextCharacter();
+                      const animateExit = (exitNow) => {
+                        const exitProgress = Math.min((exitNow - exitStart) / exitDuration, 1);
+                        const easedExit = 1 - (1 - exitProgress) * (1 - exitProgress);
+                        const nextPoint = getQuadraticPoint(
+                          exitStartPoint,
+                          exitControlPoint,
+                          exitPoint,
+                          easedExit
+                        );
+
+                        positionReturnCursor(nextPoint.x, nextPoint.y);
+
+                        if (exitProgress < 1) {
+                          helperState.frameId = requestAnimationFrame(animateExit);
+                          return;
+                        }
+
+                        hideReturnCursor();
+                        processReturnQueue();
+                      };
+
+                      helperState.frameId = requestAnimationFrame(animateExit);
+                    }, 2000);
+
+                    helperState.timeouts.push(holdTimeout);
+                  };
+
+                  typeNextCharacter();
+                }, 420);
+
+                helperState.timeouts.push(indicatorTimeout);
               };
 
               if (returnCursorComment && returnCursorLabel) {
@@ -588,6 +864,7 @@ if (stage && draggableNames.length) {
   draggableNames.forEach((node) => {
     node.addEventListener("pointerdown", (event) => {
       event.stopPropagation();
+      idleDelayMs = 5000;
       selectName(node);
 
       if (activeReturn && activeReturn.node === node) {
@@ -596,10 +873,12 @@ if (stage && draggableNames.length) {
         clearBotState(activeReturn.node);
         clearDragGuide();
         activeReturn = null;
+        isIdlePromptRunning = false;
         hideReturnCursor();
       }
 
       cancelReturnForNode(node);
+      scheduleIdlePrompt();
 
       const rect = node.getBoundingClientRect();
       const offsetX = event.clientX - rect.left;
@@ -672,6 +951,8 @@ if (stage && draggableNames.length) {
           return;
         }
 
+        totalMoveCount += 1;
+
         const timeoutId = window.setTimeout(() => {
           pendingReturnTimeouts.delete(node);
           removeQueuedReturn(node);
@@ -680,6 +961,7 @@ if (stage && draggableNames.length) {
         }, 1000);
 
         pendingReturnTimeouts.set(node, timeoutId);
+        scheduleIdlePrompt();
       };
 
       window.addEventListener("pointermove", moveName);
@@ -692,11 +974,24 @@ if (stage && draggableNames.length) {
     if (!hasUserMovedName) {
       centerNames();
     }
+
+    idleDelayMs = 5000;
+    scheduleIdlePrompt();
   });
 
   document.addEventListener("pointerdown", (event) => {
     if (!event.target.closest(".name-layer")) {
       clearSelection();
     }
+
+    idleDelayMs = 5000;
+    scheduleIdlePrompt();
   });
+
+  window.addEventListener("pointermove", () => {
+    idleDelayMs = 5000;
+    scheduleIdlePrompt();
+  }, { passive: true });
+
+  scheduleIdlePrompt();
 }

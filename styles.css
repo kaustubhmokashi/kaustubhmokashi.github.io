@@ -272,11 +272,22 @@ body *::after {
   white-space: nowrap;
 }
 
+.return-cursor-prompt {
+  display: none;
+  font-family: "Noto Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  color: #ececec;
+  white-space: nowrap;
+}
+
 .return-cursor.is-commenting {
   width: auto;
 }
 
-.return-cursor.is-commenting .return-cursor-label {
+.return-cursor.is-commenting .return-cursor-label,
+.return-cursor.is-prompting .return-cursor-label {
   align-items: flex-start;
   justify-content: flex-start;
   flex-direction: column;
@@ -285,13 +296,22 @@ body *::after {
   border-radius: 2px 20px 20px 20px;
 }
 
-.return-cursor.is-commenting .return-cursor-name {
+.return-cursor.is-commenting .return-cursor-name,
+.return-cursor.is-prompting .return-cursor-name {
   font-size: 11px;
   line-height: 15px;
   opacity: 0.8;
 }
 
 .return-cursor.is-commenting .return-cursor-comment {
+  display: inline-block;
+}
+
+.return-cursor.is-prompting {
+  width: auto;
+}
+
+.return-cursor.is-prompting .return-cursor-prompt {
   display: inline-block;
 }
 
