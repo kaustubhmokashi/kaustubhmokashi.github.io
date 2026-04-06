@@ -25,7 +25,7 @@
       rel="stylesheet"
     />
     <link rel="icon" type="image/svg+xml" href="../favicon.svg?v=1" />
-    <link rel="stylesheet" href="../styles.css?v=16" />
+    <link rel="stylesheet" href="../styles.css?v=18" />
   </head>
   <body class="page-live">
     <a class="site-title site-title-link" href="https://www.kaustubhmokashi.com">KAUSTUBH MOKASHI</a>
@@ -52,7 +52,7 @@
     <div class="drag-guide-label" aria-hidden="true">
       <span class="drag-guide-text">dx: 0,  dy: 0</span>
     </div>
-    <main class="page-shell">
+    <main class="page-shell page-shell-centered">
       <section class="page-panel page-panel-centered page-panel-live" aria-label="Case Study">
         <p class="page-kicker">Case Study</p>
         <h1
@@ -86,24 +86,64 @@
           <div class="case-study-section">
             <p class="product-block-kicker">Why</p>
             <p class="product-body-copy">
-              The Paperpal Reference Library began as a friction story. Academics and researchers
-              already had files scattered across folders, email attachments, and reference managers,
-              but the act of transforming those files into structured citations was still manual and
-              slow. The same paper might be uploaded to multiple tools, re-labeled repeatedly, and
-              exported into different citation formats depending on where the work would finally be
-              submitted. Each handoff created another chance for data to drift: author order got
-              shuffled, publication metadata went missing, and citations were misaligned between
-              what lived in a library and what showed up inside a draft.
+              It started with a familiar moment I kept hearing in interviews. A researcher opens a
+              draft the night before a submission, sees a handful of citations marked in yellow, and
+              realizes the references list does not match the latest version of the paper. Nothing
+              is technically broken. The file exists. The PDF is in a folder. The reference manager
+              has a copy. But the paper is still missing a volume number, an author order is reversed,
+              or the citation style does not match the journal template. It is not a big error, but
+              it creates a panic spiral because the last mile matters most.
             </p>
             <p class="product-body-copy">
-              The problem wasn’t just “no library.” It was the hidden cost of repetition. People
-              were wasting time rebuilding reference lists, fixing formatting quirks, and manually
-              syncing their libraries between tools like Zotero, Word, and Google Docs. Those fixes
-              were invisible to the end reader but extremely visible to the researcher who had to
-              keep their sources correct. The goal for this project was to remove that hidden cost:
-              to make references feel like a <strong class="case-study-accent">stable asset</strong>
-              that moves with the researcher across tools, not an artifact that needs constant
-              rework.
+              As we looked closer, the story was consistent across roles. A doctoral student is
+              juggling drafts between Word and Docs, exporting BibTeX, then importing it into a
+              reference manager, then back into the writing tool. A research assistant is helping
+              their lead by cleaning citations, but their updates live in a different tool so nothing
+              stays in sync. A principal investigator has a library of years of citations and is
+              reluctant to move away from a tool that works, even if it is slow. Everyone is moving,
+              but the references are always lagging a step behind.
+            </p>
+            <p class="product-body-copy">
+              The friction did not come from a lack of tooling. It came from how the tools were
+              stitched together. When a paper or reference lives in multiple places, the act of
+              correcting it becomes a game of telephone. Each export or sync is a chance to lose
+              context. Most teams were using some combination of Zotero, a cloud drive, and a writing
+              surface, and they had built a personal set of workarounds to keep things correct. Those
+              workarounds were invisible to anyone outside the team, which meant the cost of
+              maintaining references was carried silently by the people doing the work.
+            </p>
+            <p class="product-body-copy">
+              The biggest insight for us was that the pain was emotional as much as it was
+              procedural. References are proof. They are the academic equivalent of receipts. When
+              they are out of sync, it shakes confidence in the entire body of work. The researcher
+              does not only worry about formatting. They worry about credibility. They worry about
+              trust. They worry about whether the paper is ready to be read. That stress shows up
+              in the hours before a deadline and in the weeks after a revision, when the library is
+              still not stable.
+            </p>
+            <p class="product-body-copy">
+              We also saw how simple actions created unexpected drift. A file upload happens in one
+              place. A citation is pulled in another. A metadata correction is made in a third. Even
+              when tools claimed to sync, the sync was often delayed or partial, so the person doing
+              the work could not rely on it. The more cross tool the workflow became, the more
+              brittle the reference set felt. It was not a single dramatic failure, but a thousand
+              tiny breaks that accumulated into loss of trust.
+            </p>
+            <p class="product-body-copy">
+              That is why we framed the problem as a continuity problem, not a storage problem. We
+              were not trying to make a new library for the sake of it. We were trying to make a
+              place where references could be treated as a stable asset. That stability had to travel
+              across tools, across formats, and across collaborators. The goal was a library that
+              reduced the hidden labor of keeping citations correct, so researchers could focus on
+              the work rather than the maintenance.
+            </p>
+            <p class="product-body-copy">
+              The product goal became clear: design a reference library that behaves like a
+              reliable backbone. It should accept messy real world inputs, convert them into clean
+              structured references, and then keep those references consistent wherever they are used.
+              That meant the library had to be more than a place to drop files. It had to be a
+              reference system that <strong class="case-study-accent">protects trust</strong> through
+              the entire research workflow.
             </p>
             <ul class="case-study-list">
               <li>Uploaded papers did not reliably auto-generate structured references.</li>
@@ -122,20 +162,55 @@
           <div class="case-study-section">
             <p class="product-block-kicker">What</p>
             <p class="product-body-copy">
-              The discovery phase focused on observing how researchers actually manage sources. We
-              reviewed competitor workflows, audited the strongest and weakest points of existing
-              reference managers, and tested how citations were used across Paperpal, ChatPDF, and
-              writing surfaces. The key insight was that researchers don’t want a new place to store
-              files; they want a <strong class="case-study-accent">trusted reference spine</strong>
-              that keeps files, citations, and formats in agreement across every surface.
+              To define what we should build, we spent time living inside the existing workflow.
+              That meant watching how people actually move across tools, not how they say they do it.
+              We ran interviews and quick shadowing sessions with researchers, editorial teams, and
+              product specialists who help authors prepare papers for submission. We captured the
+              moments where the workflow broke: uploads that did not parse, metadata that was missing,
+              and formatting steps that felt like a black box. We mapped these steps visually so the
+              team could see how many switches happened before a reference was ready to use.
             </p>
             <p class="product-body-copy">
-              That insight turned into a concrete set of outcomes. The library needed to be an
+              We also did a wide review of competitor tools, from full scale reference managers to
+              lighter weight citation helpers. The pattern was clear. Tools were good at storage and
+              export, but they were less confident about continuity across surfaces. Some provided
+              a browser extension, others provided a sync, but the user still had to make decisions
+              about where the source of truth lived. The more complex the workflow, the more fragile
+              it became. That fragility showed up in subtle errors and in the time cost of checking
+              everything after the fact.
+            </p>
+            <p class="product-body-copy">
+              This research gave us a set of guiding principles. First, references should be created
+              immediately, with clear signals that parsing has succeeded or needs help. Second,
+              references should be editable where they live. Users should not need to jump to another
+              tool just to fix a small field. Third, export and sync should be part of the same
+              moment as creation, not an afterthought. Fourth, the library should behave like a
+              trusted spine that can be used across Paperpal, ChatPDF, Word, and Docs without
+              reformatting the same reference repeatedly.
+            </p>
+            <p class="product-body-copy">
+              We then translated those principles into outcomes. The library needed to be an
               ingestion engine that converts uploads into clean references automatically. It had to
-              support multiple export formats and make those formats feel native, not like add‑ons.
+              support multiple export formats and make those formats feel native, not like add ons.
               And it needed to stay in sync with external systems such as Zotero without forcing the
-              user to choose a “main” reference manager. Most importantly, citations pulled from the
+              user to choose a main reference manager. Most importantly, citations pulled from the
               library had to stay <strong class="case-study-accent">consistent across every surface</strong>.
+            </p>
+            <p class="product-body-copy">
+              The word "library" can sound passive, so we framed it as a workspace. A library implies
+              storage. A workspace implies action. We wanted researchers to feel that this space was
+              active: it parses, corrects, exports, and syncs. That framing helped us decide how to
+              prioritize functions. The top of the page needed to make creation feel safe and fast.
+              The center needed to make scanning and verification feel easy. The right rail needed
+              to make export and sync feel immediate rather than buried.
+            </p>
+            <p class="product-body-copy">
+              We also made some deliberate tradeoffs. We did not try to rebuild the full power of
+              a reference manager in one release. Instead we focused on the most common task: turning
+              files into references and then reusing those references without manual repair. That
+              focus allowed us to ship a strong core without creating feature bloat. The goal was not
+              to replace every tool. The goal was to remove the most painful steps and keep references
+              trustworthy inside the Paperpal ecosystem.
             </p>
             <ul class="case-study-list">
               <li>Auto-generate structured references from uploaded files.</li>
@@ -146,8 +221,8 @@
             </ul>
             <p class="product-body-copy">
               This phase also shaped the language of the system. We intentionally framed the library
-              as a “reference workspace” rather than a static file shelf. The vocabulary—sources,
-              citations, export, sync—was chosen to align with how academics already think about
+              as a reference workspace rather than a static file shelf. The vocabulary (sources,
+              citations, export, sync) was chosen to align with how academics already think about
               their work, which made the feature feel familiar even though the workflows were being
               rebuilt from scratch.
             </p>
@@ -196,21 +271,75 @@
               We structured the solution around three moments:
               <strong class="case-study-accent">ingestion</strong>,
               <strong class="case-study-accent">reference editing</strong>, and
-              <strong class="case-study-accent">reuse</strong>. Ingestion needed to feel immediate and
-              dependable, so the upload flow shows parsing states, file type recognition, and
-              conversion feedback. Reference editing is built as a “review pass,” not a separate mode,
-              so users can correct authors, titles, and publication details directly inside the
-              library without losing context. Finally, reuse is treated as a distribution layer:
-              export, sync, and citation access live in a single control zone so the output is always
-              tied to the source.
+              <strong class="case-study-accent">reuse</strong>. That structure let us build the
+              experience like a story with a beginning, middle, and end, instead of a loose collection
+              of tools. It also gave each part of the interface a clear job to do. Ingestion is about
+              trust, editing is about accuracy, and reuse is about momentum.
             </p>
             <p class="product-body-copy">
-              The dashboard is designed as the home for this loop. The left navigation organizes
-              sources and filters without hiding the act of creation. The center area is optimized
-              for scanning references at scale, while the right rail becomes the action surface for
-              export, sync, and citation tools. This layout keeps the library visually stable even
-              when different file types are being uploaded, while giving researchers clear signals
-              about what’s ready, what needs review, and what’s already synced.
+              Ingestion needed to feel immediate and dependable. We designed the upload flow to show
+              recognition states, file type identification, and parsing feedback so users could see
+              what the system was doing, not just wait for it. If the system was still extracting
+              metadata, we surfaced that state. If it succeeded, we showed the result instantly. If
+              it needed help, we positioned the correction right next to the extracted fields. The
+              goal was to make the system feel confident and transparent, because that is what earns
+              trust in a workflow that depends on accuracy.
+            </p>
+            <p class="product-body-copy">
+              Reference editing needed to be a review pass, not a separate mode. People told us they
+              wanted to fix references without feeling like they were leaving the library. So we
+              designed inline edits that sit within the list view. Author order, publication year,
+              title formatting, and source type can be corrected in place. The UI keeps the line item
+              stable while fields update, which means the user can scan, edit, and move on without
+              losing their place. We also used subtle visual cues to show what is verified versus
+              what needs attention, which helps the researcher prioritize without reading every field.
+            </p>
+            <p class="product-body-copy">
+              Reuse became the distribution layer. We placed export, sync, and citation access in a
+              dedicated action zone so it is always visible. The right rail acts like a control
+              center: it shows available formats, offers quick export, and highlights the sync status
+              with tools like Zotero. This approach prevents the common trap of burying export inside
+              menus, which creates a disconnect between creation and use. The moment a reference is
+              created, the system makes it clear how it can travel.
+            </p>
+            <p class="product-body-copy">
+              The dashboard layout supports that loop. The left navigation organizes sources and
+              filters without hiding the act of creation. The center area is optimized for scanning
+              references at scale, while the right rail becomes the action surface for export, sync,
+              and citation tools. This layout keeps the library visually stable even when different
+              file types are being uploaded, while giving researchers clear signals about what is
+              ready, what needs review, and what is already synced.
+            </p>
+            <p class="product-body-copy">
+              We designed the information architecture to minimize mode switching. Search, filters,
+              and collections are visible but not dominant. The goal was to make the list of
+              references the hero, since that is where researchers spend most of their time. We kept
+              the density high but the visual hierarchy clear: primary metadata is strong, secondary
+              metadata is quieter, and actions are aligned to the right for quick access. This makes
+              the list feel like a clean inventory rather than a noisy table.
+            </p>
+            <p class="product-body-copy">
+              We also baked in language and microcopy that feels academic without feeling heavy. The
+              action labels use verbs like export, sync, cite, and review. We avoided technical terms
+              that only make sense to reference management experts. The result is a system that feels
+              familiar to long time researchers but approachable to students who are building their
+              first reference set.
+            </p>
+            <p class="product-body-copy">
+              The most important part of this implementation was the relationship between data and
+              trust. Every visual element is designed to answer a simple question: can I rely on this
+              reference? Progress states show when parsing is done. Edit states show when a field has
+              been changed. Sync states show when an external tool is up to date. These signals keep
+              the user grounded. They reduce the fear that a reference is out of date or that a
+              citation was copied from a stale source.
+            </p>
+            <p class="product-body-copy">
+              Finally, we made sure the library works as a shared foundation across the Paperpal
+              ecosystem. Citations pulled in ChatPDF or writing surfaces are tied back to the same
+              reference record, so the user does not need to rebuild the same citation in multiple
+              places. That creates a sense of continuity that was missing in the earlier workflow.
+              The story ends where it began: researchers trust that their references will hold,
+              which lets them focus on the research itself.
             </p>
             <ul class="case-study-list">
               <li>Upload → parse → reference creation with progress states.</li>
@@ -234,30 +363,30 @@
               <figure class="case-study-figure">
                 <img
                   src="../assets/case-studies/paperpal/Dashboard%20design/User%20Flow%20screens/Empty-1.jpg"
-                  alt="User flow screen 1"
+                  alt="Upload entry point with file tray and parsing status"
                 />
-                <figcaption>User flow</figcaption>
+                <figcaption>Upload entry point with file tray and parsing status.</figcaption>
               </figure>
               <figure class="case-study-figure">
                 <img
                   src="../assets/case-studies/paperpal/Dashboard%20design/User%20Flow%20screens/Empty-2.jpg"
-                  alt="User flow screen 2"
+                  alt="Reference list view with status chips and metadata preview"
                 />
-                <figcaption>User flow</figcaption>
+                <figcaption>Reference list view with status chips and metadata preview.</figcaption>
               </figure>
               <figure class="case-study-figure">
                 <img
                   src="../assets/case-studies/paperpal/Dashboard%20design/User%20Flow%20screens/Empty-3.jpg"
-                  alt="User flow screen 3"
+                  alt="Reference detail state with editable fields and verification cues"
                 />
-                <figcaption>User flow</figcaption>
+                <figcaption>Reference detail state with editable fields and verification cues.</figcaption>
               </figure>
               <figure class="case-study-figure">
                 <img
                   src="../assets/case-studies/paperpal/Dashboard%20design/User%20Flow%20screens/Empty-4.jpg"
-                  alt="User flow screen 4"
+                  alt="Export and sync panel showing citation formats and Zotero action"
                 />
-                <figcaption>User flow</figcaption>
+                <figcaption>Export and sync panel showing citation formats and Zotero action.</figcaption>
               </figure>
             </div>
           </div>
@@ -274,6 +403,21 @@
         </div>
       </section>
     </main>
+    <div class="case-study-lightbox" aria-hidden="true">
+      <button class="case-study-lightbox-close" type="button" aria-label="Close slideshow">
+        Close
+      </button>
+      <button class="case-study-lightbox-nav case-study-lightbox-prev" type="button" aria-label="Previous image">
+        Prev
+      </button>
+      <div class="case-study-lightbox-frame" role="dialog" aria-modal="true" aria-label="Case study image viewer">
+        <img class="case-study-lightbox-image" alt="" />
+        <p class="case-study-lightbox-caption"></p>
+      </div>
+      <button class="case-study-lightbox-nav case-study-lightbox-next" type="button" aria-label="Next image">
+        Next
+      </button>
+    </div>
     <div class="personal-cursor" aria-hidden="true">
       <svg
         width="22"
@@ -390,6 +534,6 @@
         <span class="return-cursor-prompt"></span>
       </span>
     </div>
-    <script src="../script.js?v=16"></script>
+    <script src="../script.js?v=17"></script>
   </body>
 </html>

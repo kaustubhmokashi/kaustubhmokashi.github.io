@@ -3155,6 +3155,105 @@ if (repairableTitles.length) {
     }
   });
 
+  const lightbox = document.querySelector(".case-study-lightbox");
+  if (lightbox) {
+    const lightboxImage = lightbox.querySelector(".case-study-lightbox-image");
+    const lightboxCaption = lightbox.querySelector(".case-study-lightbox-caption");
+    const lightboxClose = lightbox.querySelector(".case-study-lightbox-close");
+    const lightboxPrev = lightbox.querySelector(".case-study-lightbox-prev");
+    const lightboxNext = lightbox.querySelector(".case-study-lightbox-next");
+    const lightboxFrame = lightbox.querySelector(".case-study-lightbox-frame");
+    const galleryImages = Array.from(document.querySelectorAll(".case-study-gallery img"));
+    const imageData = galleryImages.map((img) => {
+      const figure = img.closest("figure");
+      const caption = figure ? figure.querySelector("figcaption") : null;
+      return {
+        src: img.getAttribute("src"),
+        alt: img.getAttribute("alt") || "Case study image",
+        caption: caption ? caption.textContent : "",
+      };
+    });
+    let activeIndex = 0;
+
+    const renderLightbox = () => {
+      const current = imageData[activeIndex];
+      if (!current) {
+        return;
+      }
+      lightboxImage.src = current.src;
+      lightboxImage.alt = current.alt;
+      lightboxCaption.textContent = current.caption || current.alt;
+    };
+
+    const openLightbox = (index) => {
+      activeIndex = Math.max(0, Math.min(index, imageData.length - 1));
+      renderLightbox();
+      lightbox.classList.add("is-active");
+      lightbox.setAttribute("aria-hidden", "false");
+      document.body.classList.add("lightbox-open");
+    };
+
+    const closeLightbox = () => {
+      lightbox.classList.remove("is-active");
+      lightbox.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("lightbox-open");
+    };
+
+    const showNext = () => {
+      activeIndex = (activeIndex + 1) % imageData.length;
+      renderLightbox();
+    };
+
+    const showPrev = () => {
+      activeIndex = (activeIndex - 1 + imageData.length) % imageData.length;
+      renderLightbox();
+    };
+
+    galleryImages.forEach((img, index) => {
+      img.addEventListener("click", (event) => {
+        event.preventDefault();
+        openLightbox(index);
+      });
+    });
+
+    if (lightboxClose) {
+      lightboxClose.addEventListener("click", closeLightbox);
+    }
+    if (lightboxPrev) {
+      lightboxPrev.addEventListener("click", showPrev);
+    }
+    if (lightboxNext) {
+      lightboxNext.addEventListener("click", showNext);
+    }
+
+    lightbox.addEventListener("click", (event) => {
+      if (event.target === lightbox) {
+        closeLightbox();
+      }
+    });
+
+    if (lightboxFrame) {
+      lightboxFrame.addEventListener("click", (event) => {
+        event.stopPropagation();
+      });
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if (!lightbox.classList.contains("is-active")) {
+        return;
+      }
+      if (event.key === "Escape") {
+        closeLightbox();
+      }
+      if (event.key === "ArrowRight") {
+        showNext();
+      }
+      if (event.key === "ArrowLeft") {
+        showPrev();
+      }
+    });
+  }
+
   updateRepairableOrigins();
   window.addEventListener("resize", updateRepairableOrigins);
 
