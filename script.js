@@ -315,6 +315,12 @@ const initProjectLocks = () => {
       unlockedProjectLocks.add(lockId);
       error.textContent = "";
       input.value = "";
+      if (typeof ensureUnifiedPlaceholders === "function") {
+        ensureUnifiedPlaceholders();
+      }
+      if (typeof updateParallaxTargets === "function") {
+        updateParallaxTargets();
+      }
     };
 
     if (unlockedProjectLocks.has(lockId)) {
@@ -3312,3 +3318,140 @@ const revealCards = () => {
 };
 
 revealCards();
+
+const ensureUnifiedPlaceholders = () => {
+  const isCaseStudyPath = window.location.pathname.includes("/case-studies/");
+  const placeholderSrc = isCaseStudyPath
+    ? "../assets/paperpal-frame.webp"
+    : "./assets/paperpal-frame.webp";
+  const frames = document.querySelectorAll(".product-visual-frame");
+  frames.forEach((frame) => {
+    const lockedFrame = frame.closest(".project-lock.is-locked");
+    if (lockedFrame) {
+      frame.querySelectorAll("img").forEach((img) => img.remove());
+      frame.querySelectorAll("[data-parallax-image]").forEach((node) => node.remove());
+      const label = frame.querySelector(".product-visual-label");
+      if (label) {
+        label.remove();
+      }
+      const copy = frame.querySelector(".product-visual-placeholder-copy");
+      if (copy) {
+        copy.remove();
+      }
+      return;
+    }
+    const frameImage =
+      frame.dataset.image ||
+      frame.closest("[data-project-image]")?.dataset.projectImage ||
+      placeholderSrc;
+    let img = frame.querySelector("img");
+    if (!img) {
+      img = document.createElement("img");
+      img.className = "product-visual-image product-visual-image-parallax";
+      img.alt = "Product preview placeholder";
+      img.setAttribute("data-parallax-image", "");
+      frame.appendChild(img);
+    } else {
+      img.classList.add("product-visual-image-parallax");
+      img.setAttribute("data-parallax-image", "");
+      img.alt = img.alt || "Product preview placeholder";
+    }
+    img.src = frameImage;
+
+    const label = frame.querySelector(".product-visual-label");
+    if (label) {
+      label.remove();
+    }
+    const copy = frame.querySelector(".product-visual-placeholder-copy");
+    if (copy) {
+      copy.remove();
+    }
+  });
+};
+
+ensureUnifiedPlaceholders();
+
+const parallaxImages = () => [...document.querySelectorAll("[data-parallax-image]")];
+const parallaxState = new WeakMap();
+let parallaxAnimating = false;
+
+const computeParallaxTarget = (image) => {
+  const card = image.closest(".product-block");
+  if (!card) {
+    return { x: 0, y: 0 };
+  }
+  const viewportHeight = window.innerHeight || 1;
+  const rect = card.getBoundingClientRect();
+  const progress = Math.min(
+    Math.max((viewportHeight - rect.top) / (viewportHeight + rect.height), 0),
+    1
+  );
+  let x = 40;
+  let y = 40;
+  if (progress <= 0.5) {
+    const t = progress / 0.5;
+    x = 40 - 40 * t;
+    y = 40 - 40 * t;
+  } else {
+    const t = (progress - 0.5) / 0.5;
+    x = -40 * t;
+    y = -40 * t;
+  }
+  return { x, y };
+};
+
+const updateParallaxTargets = () => {
+  const images = parallaxImages();
+  if (!images.length) {
+    return;
+  }
+  images.forEach((image) => {
+    const target = computeParallaxTarget(image);
+    const state = parallaxState.get(image) || { x: target.x, y: target.y, tx: target.x, ty: target.y };
+    state.tx = target.x;
+    state.ty = target.y;
+    parallaxState.set(image, state);
+  });
+  startParallaxAnimation();
+};
+
+const startParallaxAnimation = () => {
+  if (parallaxAnimating) {
+    return;
+  }
+  parallaxAnimating = true;
+  requestAnimationFrame(stepParallaxAnimation);
+};
+
+const stepParallaxAnimation = () => {
+  const images = parallaxImages();
+  let hasActive = false;
+  images.forEach((image) => {
+    const state = parallaxState.get(image);
+    if (!state) {
+      return;
+    }
+    const dx = state.tx - state.x;
+    const dy = state.ty - state.y;
+    state.x += dx * 0.12;
+    state.y += dy * 0.12;
+    if (Math.abs(dx) > 0.2 || Math.abs(dy) > 0.2) {
+      hasActive = true;
+    } else {
+      state.x = state.tx;
+      state.y = state.ty;
+    }
+    image.style.setProperty("--parallax-x", `${state.x}px`);
+    image.style.setProperty("--parallax-y", `${state.y}px`);
+  });
+
+  if (hasActive) {
+    requestAnimationFrame(stepParallaxAnimation);
+  } else {
+    parallaxAnimating = false;
+  }
+};
+
+updateParallaxTargets();
+window.addEventListener("scroll", updateParallaxTargets, { passive: true });
+window.addEventListener("resize", updateParallaxTargets);
