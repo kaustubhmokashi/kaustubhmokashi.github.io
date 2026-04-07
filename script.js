@@ -3733,6 +3733,7 @@ const initVersionTooltip = () => {
     if (!tooltip) {
       tooltip = document.createElement("span");
       tooltip.className = "version-tooltip";
+      tooltip.setAttribute("aria-hidden", "true");
       tooltip.textContent = `v${version}`;
       link.appendChild(tooltip);
     } else {

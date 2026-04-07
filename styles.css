@@ -166,15 +166,18 @@ body *::after {
   line-height: 16px;
   border-radius: 2px;
   opacity: 0;
+  visibility: hidden;
   transform: translateY(4px);
   pointer-events: none;
   transition: opacity 0.2s ease, transform 0.2s ease;
   white-space: nowrap;
   z-index: 50;
+  display: block;
 }
 
 .site-title-link.show-version .version-tooltip {
   opacity: 1;
+  visibility: visible;
   transform: translateY(0);
 }
 
