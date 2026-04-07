@@ -3570,11 +3570,25 @@ const initCsvContent = () => {
       if (!csvUrl) {
         return;
       }
-      const response = await fetch(csvUrl, { cache: "no-store" });
-      if (!response.ok) {
+      let text = "";
+      try {
+        const response = await fetch(csvUrl, { cache: "no-store" });
+        if (response.ok) {
+          text = await response.text();
+        }
+      } catch {
+        text = "";
+      }
+      if (!text) {
+        const inlineCsv =
+          window.__CSV_INLINE__ && window.__CSV_INLINE__[csvUrl];
+        if (inlineCsv) {
+          text = inlineCsv;
+        }
+      }
+      if (!text) {
         return;
       }
-      const text = await response.text();
       const rows = parseCsv(text);
       if (rows.length < 2) {
         return;
