@@ -228,9 +228,10 @@ const clearSharedDragGuide = () => {
   }
 };
 
-const projectLocks = [...document.querySelectorAll(".project-lock[data-project-lock]")];
 const unlockedProjectLocks = new Set();
+const csvLocksById = {};
 const initProjectLocks = () => {
+  const projectLocks = [...document.querySelectorAll(".project-lock[data-project-lock]")];
   if (!projectLocks.length) {
     return;
   }
@@ -299,12 +300,14 @@ const initProjectLocks = () => {
 
   projectLocks.forEach((lockNode) => {
     const lockId = lockNode.dataset.projectLock;
-    const encryptedPayload = encryptedProjectContentById[lockId];
+    const csvLock = csvLocksById[lockId];
+    const encryptedPayload = csvLock?.payload || encryptedProjectContentById[lockId];
     const mount = lockNode.querySelector(".project-lock-mount");
     const form = lockNode.querySelector(".project-lock-form");
     const input = lockNode.querySelector(".project-lock-input");
     const error = lockNode.querySelector(".project-lock-error");
     const visibilityToggle = lockNode.querySelector(".project-lock-visibility");
+    const requiredPassword = csvLock?.password || null;
 
     if (!encryptedPayload || !mount || !form || !input || !error) {
       return;
@@ -339,14 +342,24 @@ const initProjectLocks = () => {
       event.preventDefault();
       error.textContent = "";
 
-      if (!window.crypto?.subtle) {
-        error.textContent = "This browser can't verify the password right now.";
-        return;
-      }
-
       const value = input.value.trim();
       if (!value) {
         error.textContent = "Enter the password to unlock this project.";
+        return;
+      }
+
+      if (requiredPassword) {
+        if (value !== requiredPassword) {
+          error.textContent = "That password didn’t match.";
+          return;
+        }
+        mount.innerHTML = encryptedPayload;
+        unlock();
+        return;
+      }
+
+      if (!window.crypto?.subtle) {
+        error.textContent = "This browser can't verify the password right now.";
         return;
       }
 
@@ -361,8 +374,6 @@ const initProjectLocks = () => {
     });
   });
 };
-
-initProjectLocks();
 
 if (topMenu && topMenuToggle) {
   const updateMobileTogglePinning = () => {
@@ -3319,6 +3330,316 @@ const revealCards = () => {
 
 revealCards();
 
+const parseCsv = (text) => {
+  const rows = [];
+  let row = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < text.length; i += 1) {
+    const char = text[i];
+    const next = text[i + 1];
+    if (char === '"') {
+      if (inQuotes && next === '"') {
+        current += '"';
+        i += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+      continue;
+    }
+    if (char === "," && !inQuotes) {
+      row.push(current);
+      current = "";
+      continue;
+    }
+    if ((char === "\n" || char === "\r") && !inQuotes) {
+      if (char === "\r" && next === "\n") {
+        i += 1;
+      }
+      row.push(current);
+      if (row.some((cell) => cell.trim() !== "")) {
+        rows.push(row);
+      }
+      row = [];
+      current = "";
+      continue;
+    }
+    current += char;
+  }
+  row.push(current);
+  if (row.some((cell) => cell.trim() !== "")) {
+    rows.push(row);
+  }
+  return rows;
+};
+
+const arrowSvgMarkup =
+  '<svg class="cta-arrow" aria-hidden="true" viewBox="0 0 22 22" role="presentation"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.3473 5.01405C12.4762 4.8853 12.651 4.81299 12.8332 4.81299C13.0154 4.81299 13.1901 4.8853 13.319 5.01405L18.819 10.5141C18.9478 10.643 19.0201 10.8177 19.0201 10.9999C19.0201 11.1821 18.9478 11.3568 18.819 11.4857L13.319 16.9857C13.2561 17.0533 13.1802 17.1074 13.0958 17.145C13.0115 17.1826 12.9205 17.2028 12.8281 17.2044C12.7358 17.2061 12.6441 17.1891 12.5585 17.1545C12.4729 17.1199 12.3952 17.0685 12.3299 17.0032C12.2646 16.9379 12.2131 16.8601 12.1786 16.7745C12.144 16.6889 12.127 16.5972 12.1286 16.5049C12.1303 16.4126 12.1505 16.3216 12.188 16.2372C12.2256 16.1529 12.2798 16.077 12.3473 16.014L16.674 11.6874H3.6665C3.48417 11.6874 3.3093 11.615 3.18037 11.486C3.05144 11.3571 2.979 11.1822 2.979 10.9999C2.979 10.8175 3.05144 10.6427 3.18037 10.5137C3.3093 10.3848 3.48417 10.3124 3.6665 10.3124H16.674L12.3473 5.98572C12.2186 5.85681 12.1463 5.68207 12.1463 5.49988C12.1463 5.3177 12.2186 5.14296 12.3473 5.01405Z"/></svg>';
+
+const normalizeDriveImageLink = (value) => {
+  if (!value) {
+    return value;
+  }
+  const trimmed = value.trim();
+  if (!trimmed.includes("drive.google.com")) {
+    return trimmed;
+  }
+  if (trimmed.includes("uc?export=download&id=")) {
+    return trimmed;
+  }
+  const fileIdMatch =
+    trimmed.match(/\/file\/d\/([^/]+)/) || trimmed.match(/[?&]id=([^&]+)/);
+  if (!fileIdMatch) {
+    return trimmed;
+  }
+  const fileId = fileIdMatch[1];
+  return `https://drive.google.com/uc?export=download&id=${fileId}`;
+};
+
+const applyCardData = (card, record) => {
+  if (!record) {
+    return;
+  }
+  const preTitle = card.querySelector(".product-block-kicker");
+  if (preTitle && record.pre_title) {
+    preTitle.textContent = record.pre_title;
+  }
+
+  const titleContent =
+    card.querySelector(".product-block-title .repairable-text-content") ||
+    card.querySelector(".product-block-title");
+  if (titleContent && record.title) {
+    titleContent.textContent = record.title;
+  }
+
+  const description = card.querySelector(".product-body-copy");
+  if (description && record.description) {
+    description.textContent = record.description;
+  }
+
+  const stats = card.querySelectorAll(".product-stat");
+  const updateStat = (stat, value, label) => {
+    if (!stat) {
+      return;
+    }
+    if (!value && !label) {
+      stat.style.display = "none";
+      return;
+    }
+    stat.style.display = "";
+    const valueEl = stat.querySelector(".product-stat-value");
+    const labelEl = stat.querySelector(".product-stat-label");
+    if (valueEl && value) {
+      valueEl.textContent = value;
+    }
+    if (labelEl && label) {
+      labelEl.textContent = label;
+    }
+  };
+
+  updateStat(stats[0], record.data_point_1_title, record.data_point_1_text);
+  updateStat(stats[1], record.data_point_2_title, record.data_point_2_text);
+
+  const body = card.querySelector(".product-block-body") || card;
+  body.querySelectorAll(".product-block-link-row, .product-block-link").forEach((node) => {
+    node.remove();
+  });
+
+  const ctas = [
+    { text: record.cta_1_text, link: record.cta_1_link },
+    { text: record.cta_2_text, link: record.cta_2_link },
+    { text: record.cta_3_text, link: record.cta_3_link },
+  ].filter((cta) => cta.text && cta.link);
+
+  const createLink = (cta, className) => {
+    const anchor = document.createElement("a");
+    anchor.className = className;
+    const href = cta.link?.trim() || "#";
+    anchor.href = href;
+    if (!cta.link || href === "#") {
+      anchor.setAttribute("aria-disabled", "true");
+      anchor.tabIndex = -1;
+    } else {
+      anchor.setAttribute("target", "_blank");
+      anchor.setAttribute("rel", "noreferrer");
+    }
+    anchor.innerHTML = `${cta.text} ${arrowSvgMarkup}`;
+    return anchor;
+  };
+
+  const statsRow = card.querySelector(".product-stats-row");
+  const insertTarget = statsRow || body;
+
+  if (ctas.length === 1) {
+    const link = createLink(ctas[0], "product-block-link product-block-link-full");
+    insertTarget.insertAdjacentElement("afterend", link);
+  } else if (ctas.length === 2) {
+    const row = document.createElement("div");
+    row.className = "product-block-link-row";
+    row.append(createLink(ctas[0], "product-block-link product-block-link-split"));
+    row.append(createLink(ctas[1], "product-block-link product-block-link-split"));
+    insertTarget.insertAdjacentElement("afterend", row);
+  } else if (ctas.length >= 3) {
+    const row = document.createElement("div");
+    row.className = "product-block-link-row product-block-link-row-featured";
+    row.append(createLink(ctas[0], "product-block-link product-block-link-split"));
+    row.append(createLink(ctas[1], "product-block-link product-block-link-split"));
+    row.append(createLink(ctas[2], "product-block-link product-block-link-full-row"));
+    insertTarget.insertAdjacentElement("afterend", row);
+  }
+
+  if (record.project_image_link) {
+    const normalizedImage = normalizeDriveImageLink(record.project_image_link);
+    card.dataset.projectImage = normalizedImage;
+    const img = card.querySelector(".product-visual-frame img");
+    if (img) {
+      img.src = normalizedImage;
+      img.alt = record.title || img.alt;
+    }
+  }
+};
+
+const slugify = (value) =>
+  (value || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+const normalizeGeneratedCard = (card, index, record) => {
+  const titleEl = card.querySelector(".product-block-title");
+  if (titleEl) {
+    const base = slugify(record?.title) || `project-${index}`;
+    const newId = `${base}-${index}`;
+    titleEl.id = newId;
+    titleEl.setAttribute("data-repairable-title", newId);
+    card.setAttribute("aria-labelledby", newId);
+  }
+
+  const top = card.querySelector(".product-block-top");
+  if (top && record?.title) {
+    top.setAttribute("aria-label", `${record.title} overview`);
+  }
+
+  if (record?.lock === "true") {
+    const lockId = record.lock_id || card.dataset.projectLock || `lock-${index}`;
+    card.dataset.projectLock = lockId;
+    card.classList.add("project-lock", "is-locked");
+    const input = card.querySelector(".project-lock-input");
+    const label = card.querySelector(".project-lock-label");
+    if (input) {
+      const newInputId = `${lockId}-input`;
+      input.id = newInputId;
+      if (label) {
+        label.setAttribute("for", newInputId);
+      }
+    }
+  } else {
+    card.classList.remove("project-lock", "is-locked");
+    card.removeAttribute("data-project-lock");
+  }
+};
+
+const selectTemplateCard = (container, index, record) => {
+  const featured = container.querySelector(
+    ".product-block.product-block-featured-live, .product-block.product-block-featured-passion"
+  );
+  const standard = container.querySelector(
+    ".product-block:not(.product-block-featured-live):not(.product-block-featured-passion)"
+  );
+  const locked = container.querySelector(".product-block.project-lock");
+
+  if (record?.lock === "true" && locked) {
+    return locked;
+  }
+  if (index === 1 && featured) {
+    return featured;
+  }
+  return standard || featured || locked;
+};
+
+const initCsvContent = () => {
+  const containers = [...document.querySelectorAll("[data-csv]")];
+  if (!containers.length) {
+    return Promise.resolve();
+  }
+
+  return Promise.all(
+    containers.map(async (container) => {
+      const csvUrl = container.getAttribute("data-csv");
+      if (!csvUrl) {
+        return;
+      }
+      const response = await fetch(csvUrl, { cache: "no-store" });
+      if (!response.ok) {
+        return;
+      }
+      const text = await response.text();
+      const rows = parseCsv(text);
+      if (rows.length < 2) {
+        return;
+      }
+      const headers = rows[0].map((cell) => cell.trim());
+      const records = rows.slice(1).map((row) => {
+        const record = {};
+        headers.forEach((header, index) => {
+          record[header] = (row[index] || "").trim();
+        });
+        return record;
+      });
+      const getCardByIndex = (index) =>
+        container.querySelector(`.product-block[data-csv-index="${index}"]`);
+
+      for (let i = 1; i <= records.length; i += 1) {
+        const record = records[i - 1];
+        let card = getCardByIndex(i);
+        if (!card) {
+          const template = selectTemplateCard(container, i, record);
+          if (!template) {
+            continue;
+          }
+          card = template.cloneNode(true);
+          card.dataset.csvIndex = String(i);
+          card.dataset.generated = "true";
+          container.appendChild(card);
+          normalizeGeneratedCard(card, i, record);
+        }
+
+        if (record?.lock === "true") {
+          const lockId =
+            record.lock_id || card.dataset.projectLock || `lock-${i}`;
+          card.dataset.projectLock = lockId;
+          card.classList.add("project-lock", "is-locked");
+          let payload = null;
+          if (record.lock_payload) {
+            try {
+              payload = JSON.parse(record.lock_payload);
+            } catch {
+              payload = null;
+            }
+          }
+          csvLocksById[lockId] = {
+            password: record.password || null,
+            payload,
+          };
+        } else {
+          card.classList.remove("project-lock", "is-locked");
+        }
+
+        applyCardData(card, record);
+      }
+
+      const cards = [...container.querySelectorAll(".product-block[data-csv-index]")];
+      cards.forEach((card) => {
+        const index = Number(card.dataset.csvIndex || "0");
+        if (index > records.length) {
+          card.remove();
+        }
+      });
+    })
+  );
+};
+
 const ensureUnifiedPlaceholders = () => {
   const isCaseStudyPath = window.location.pathname.includes("/case-studies/");
   const placeholderSrc = isCaseStudyPath
@@ -3369,7 +3690,15 @@ const ensureUnifiedPlaceholders = () => {
   });
 };
 
-ensureUnifiedPlaceholders();
+initCsvContent()
+  .catch(() => {})
+  .finally(() => {
+    initProjectLocks();
+    ensureUnifiedPlaceholders();
+    if (typeof updateParallaxTargets === "function") {
+      updateParallaxTargets();
+    }
+  });
 
 const parallaxImages = () => [...document.querySelectorAll("[data-parallax-image]")];
 const parallaxState = new WeakMap();
