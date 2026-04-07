@@ -526,7 +526,7 @@ body.menu-open .top-menu-toggle span:nth-child(3) {
   font-size: 16px;
   font-weight: 300;
   line-height: 1.55;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .passion-repo-callout-link {
