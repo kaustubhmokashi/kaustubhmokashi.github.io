@@ -3558,11 +3558,91 @@ const selectTemplateCard = (container, index, record) => {
   return standard || featured || locked;
 };
 
+const applyCsvTextToContainer = (container, text) => {
+  if (!text) {
+    return;
+  }
+  const rows = parseCsv(text);
+  if (rows.length < 2) {
+    return;
+  }
+  const headers = rows[0].map((cell) => cell.trim());
+  const records = rows.slice(1).map((row) => {
+    const record = {};
+    headers.forEach((header, index) => {
+      record[header] = (row[index] || "").trim();
+    });
+    return record;
+  });
+  const getCardByIndex = (index) =>
+    container.querySelector(`.product-block[data-csv-index="${index}"]`);
+
+  for (let i = 1; i <= records.length; i += 1) {
+    const record = records[i - 1];
+    let card = getCardByIndex(i);
+    if (!card) {
+      const template = selectTemplateCard(container, i, record);
+      if (!template) {
+        continue;
+      }
+      card = template.cloneNode(true);
+      card.dataset.csvIndex = String(i);
+      card.dataset.generated = "true";
+      container.appendChild(card);
+      normalizeGeneratedCard(card, i, record);
+    }
+
+    if (record?.lock === "true") {
+      const lockId =
+        record.lock_id || card.dataset.projectLock || `lock-${i}`;
+      card.dataset.projectLock = lockId;
+      card.classList.add("project-lock", "is-locked");
+      let payload = null;
+      if (record.lock_payload) {
+        try {
+          payload = JSON.parse(record.lock_payload);
+        } catch {
+          payload = null;
+        }
+      }
+      csvLocksById[lockId] = {
+        password: record.password || null,
+        payload,
+      };
+    } else {
+      card.classList.remove("project-lock", "is-locked");
+    }
+
+    applyCardData(card, record);
+  }
+
+  const cards = [...container.querySelectorAll(".product-block[data-csv-index]")];
+  cards.forEach((card) => {
+    const index = Number(card.dataset.csvIndex || "0");
+    if (index > records.length) {
+      card.remove();
+    }
+  });
+};
+
 const initCsvContent = () => {
   const containers = [...document.querySelectorAll("[data-csv]")];
   if (!containers.length) {
     return Promise.resolve();
   }
+
+  const resolveCsvUrl = (csvUrl) => {
+    if (window.location.protocol !== "file:") {
+      return csvUrl;
+    }
+    if (csvUrl.startsWith("./data/")) {
+      return `https://raw.githubusercontent.com/kaustubhmokashi/portfolio/main/${csvUrl.slice(2)}`;
+    }
+    if (csvUrl.startsWith("/data/")) {
+      return `https://raw.githubusercontent.com/kaustubhmokashi/portfolio/main${csvUrl}`;
+    }
+    return csvUrl;
+  };
 
   return Promise.all(
     containers.map(async (container) => {
@@ -3572,7 +3652,8 @@ const initCsvContent = () => {
       }
       let text = "";
       try {
-        const response = await fetch(csvUrl, { cache: "no-store" });
+        const resolvedUrl = resolveCsvUrl(csvUrl);
+        const response = await fetch(resolvedUrl, { cache: "no-store" });
         if (response.ok) {
           text = await response.text();
         }
@@ -3580,76 +3661,9 @@ const initCsvContent = () => {
         text = "";
       }
       if (!text) {
-        const inlineCsv =
-          window.__CSV_INLINE__ && window.__CSV_INLINE__[csvUrl];
-        if (inlineCsv) {
-          text = inlineCsv;
-        }
-      }
-      if (!text) {
         return;
       }
-      const rows = parseCsv(text);
-      if (rows.length < 2) {
-        return;
-      }
-      const headers = rows[0].map((cell) => cell.trim());
-      const records = rows.slice(1).map((row) => {
-        const record = {};
-        headers.forEach((header, index) => {
-          record[header] = (row[index] || "").trim();
-        });
-        return record;
-      });
-      const getCardByIndex = (index) =>
-        container.querySelector(`.product-block[data-csv-index="${index}"]`);
-
-      for (let i = 1; i <= records.length; i += 1) {
-        const record = records[i - 1];
-        let card = getCardByIndex(i);
-        if (!card) {
-          const template = selectTemplateCard(container, i, record);
-          if (!template) {
-            continue;
-          }
-          card = template.cloneNode(true);
-          card.dataset.csvIndex = String(i);
-          card.dataset.generated = "true";
-          container.appendChild(card);
-          normalizeGeneratedCard(card, i, record);
-        }
-
-        if (record?.lock === "true") {
-          const lockId =
-            record.lock_id || card.dataset.projectLock || `lock-${i}`;
-          card.dataset.projectLock = lockId;
-          card.classList.add("project-lock", "is-locked");
-          let payload = null;
-          if (record.lock_payload) {
-            try {
-              payload = JSON.parse(record.lock_payload);
-            } catch {
-              payload = null;
-            }
-          }
-          csvLocksById[lockId] = {
-            password: record.password || null,
-            payload,
-          };
-        } else {
-          card.classList.remove("project-lock", "is-locked");
-        }
-
-        applyCardData(card, record);
-      }
-
-      const cards = [...container.querySelectorAll(".product-block[data-csv-index]")];
-      cards.forEach((card) => {
-        const index = Number(card.dataset.csvIndex || "0");
-        if (index > records.length) {
-          card.remove();
-        }
-      });
+      applyCsvTextToContainer(container, text);
     })
   );
 };
