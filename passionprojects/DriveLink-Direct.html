@@ -53,7 +53,10 @@
       <span class="drag-guide-text">dx: 0,  dy: 0</span>
     </div>
     <main class="page-shell page-shell-centered">
-      <section class="page-panel page-panel-centered page-panel-passion" aria-label="DriveLink Direct">
+      <section
+        class="page-panel page-panel-centered page-panel-passion drive-link-panel"
+        aria-label="DriveLink Direct"
+      >
         <p class="page-kicker">Passion Project</p>
         <h1 class="page-heading">DriveLink Direct</h1>
         <p class="drive-link-subtitle">
@@ -70,6 +73,7 @@
               placeholder="https://drive.google.com/file/d/..."
               required
             />
+            <p class="drive-link-error" role="alert" aria-live="polite"></p>
             <button class="drive-link-generate" type="submit">Generate Direct Link</button>
           </form>
 
@@ -92,18 +96,139 @@
         </div>
       </section>
     </main>
+    <div class="personal-cursor" aria-hidden="true">
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 22 22"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g filter="url(#personal-cursor-shadow)">
+          <path
+            d="M7.70778 17.5249L2.56947 2.844C2.28453 2.02988 3.09489 1.2611 3.89289 1.58848L17.9799 7.36777C18.9193 7.75316 18.7528 9.13125 17.7487 9.28187L12.0025 10.1438C11.5989 10.2043 11.2725 10.5041 11.178 10.9011L9.62444 17.4261C9.39316 18.3975 8.03764 18.4673 7.70778 17.5249Z"
+            fill="#FFF"
+            stroke="#FFF"
+            stroke-width="1"
+          />
+        </g>
+        <defs>
+          <filter
+            id="personal-cursor-shadow"
+            x="0.00000977516"
+            y="-0.00000548363"
+            width="21.1108"
+            height="21.7046"
+            filterUnits="userSpaceOnUse"
+            color-interpolation-filters="sRGB"
+          >
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feColorMatrix
+              in="SourceAlpha"
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+              result="hardAlpha"
+            />
+            <feOffset dy="1" />
+            <feGaussianBlur stdDeviation="1.005" />
+            <feComposite in2="hardAlpha" operator="out" />
+            <feColorMatrix
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.28 0"
+            />
+            <feBlend
+              mode="normal"
+              in2="BackgroundImageFix"
+              result="effect1_dropShadow_134_2658"
+            />
+            <feBlend
+              mode="normal"
+              in="SourceGraphic"
+              in2="effect1_dropShadow_134_2658"
+              result="shape"
+            />
+          </filter>
+        </defs>
+      </svg>
+      <span class="personal-cursor-label">You</span>
+    </div>
+    <div class="return-cursor" aria-hidden="true">
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 22 22"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g filter="url(#return-cursor-shadow)">
+          <path
+            d="M7.70778 17.5249L2.56947 2.844C2.28453 2.02988 3.09489 1.2611 3.89289 1.58848L17.9799 7.36777C18.9193 7.75316 18.7528 9.13125 17.7487 9.28187L12.0025 10.1438C11.5989 10.2043 11.2725 10.5041 11.178 10.9011L9.62444 17.4261C9.39316 18.3975 8.03764 18.4673 7.70778 17.5249Z"
+            fill="#29A146"
+            stroke="#FFF"
+            stroke-width="1"
+          />
+        </g>
+        <defs>
+          <filter
+            id="return-cursor-shadow"
+            x="0.00000977516"
+            y="-0.00000548363"
+            width="21.1108"
+            height="21.7046"
+            filterUnits="userSpaceOnUse"
+            color-interpolation-filters="sRGB"
+          >
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feColorMatrix
+              in="SourceAlpha"
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+              result="hardAlpha"
+            />
+            <feOffset dy="1" />
+            <feGaussianBlur stdDeviation="1.005" />
+            <feComposite in2="hardAlpha" operator="out" />
+            <feColorMatrix
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.28 0"
+            />
+            <feBlend
+              mode="normal"
+              in2="BackgroundImageFix"
+              result="effect1_dropShadow_134_2658"
+            />
+            <feBlend
+              mode="normal"
+              in="SourceGraphic"
+              in2="effect1_dropShadow_134_2658"
+              result="shape"
+            />
+          </filter>
+        </defs>
+      </svg>
+      <span class="personal-cursor-label return-cursor-label">
+        <span class="return-cursor-name">Kaustubh Mokashi</span>
+        <span class="return-cursor-comment" data-full-comment=""></span>
+        <span class="return-cursor-prompt"></span>
+      </span>
+    </div>
     <script src="../script.js"></script>
     <script>
       const driveInput = document.querySelector("#drive-link-input");
       const driveOutput = document.querySelector("#drive-link-output");
       const driveCopy = document.querySelector(".drive-link-copy");
       const driveForm = document.querySelector(".drive-link-form");
+      const driveError = document.querySelector(".drive-link-error");
 
       const normalizeDriveLink = (value) => {
         if (!value) {
           return "";
         }
         const trimmed = value.trim();
+        const isDrive = trimmed.includes("drive.google.com");
+        if (!isDrive) {
+          return "";
+        }
         if (!trimmed.includes("drive.google.com")) {
           return trimmed;
         }
@@ -125,7 +250,21 @@
 
       driveForm.addEventListener("submit", (event) => {
         event.preventDefault();
-        driveOutput.value = normalizeDriveLink(driveInput.value);
+        const normalized = normalizeDriveLink(driveInput.value);
+        if (!normalized) {
+          driveInput.classList.add("is-error");
+          if (driveError) {
+            driveError.textContent = "Please enter a valid Google Drive link.";
+          }
+          driveOutput.value = "";
+          updateCopyState();
+          return;
+        }
+        driveInput.classList.remove("is-error");
+        if (driveError) {
+          driveError.textContent = "";
+        }
+        driveOutput.value = normalized;
         updateCopyState();
       });
 

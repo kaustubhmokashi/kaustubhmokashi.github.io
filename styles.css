@@ -508,6 +508,7 @@ body.menu-open .top-menu-toggle span:nth-child(3) {
   z-index: 1;
 }
 
+
 .drive-link-subtitle {
   max-width: 680px;
   margin: 16px 0 0;
@@ -521,6 +522,31 @@ body.menu-open .top-menu-toggle span:nth-child(3) {
   width: min(720px, 100%);
   display: grid;
   gap: 24px;
+}
+
+.drive-link-panel {
+  align-items: center;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+}
+
+.drive-link-panel .page-heading {
+  font-family: "Jersey 15", sans-serif;
+}
+
+.drive-link-panel .page-heading,
+.drive-link-panel .drive-link-subtitle {
+  text-align: center;
+}
+
+.drive-link-panel .drive-link-tool {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.drive-link-panel .drive-link-form,
+.drive-link-panel .drive-link-output {
+  text-align: left;
 }
 
 .drive-link-form,
@@ -549,6 +575,10 @@ body.menu-open .top-menu-toggle span:nth-child(3) {
 
 .drive-link-input::placeholder {
   color: rgba(236, 236, 236, 0.4);
+}
+
+.drive-link-input.is-error {
+  border-color: #f61254;
 }
 
 .drive-link-generate,
@@ -586,6 +616,13 @@ body.menu-open .top-menu-toggle span:nth-child(3) {
   margin: 0;
   color: rgba(236, 236, 236, 0.4);
   font-size: 14px;
+}
+
+.drive-link-error {
+  margin: 0;
+  color: #f61254;
+  font-size: 14px;
+  min-height: 18px;
 }
 
 .product-block {
@@ -1414,13 +1451,19 @@ body.menu-open .top-menu-toggle span:nth-child(3) {
 }
 
 .product-visual-image-parallax {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   width: 140%;
   height: 140%;
   min-width: 140%;
   min-height: 140%;
   object-fit: cover;
   object-position: center;
-  transform: translate(var(--parallax-x, 40px), var(--parallax-y, 40px));
+  transform: translate(
+    calc(-50% + var(--parallax-x, 40px)),
+    calc(-50% + var(--parallax-y, 40px))
+  );
   transition: none;
   will-change: transform;
 }

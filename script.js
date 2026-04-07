@@ -3385,6 +3385,9 @@ const normalizeDriveImageLink = (value) => {
     return trimmed;
   }
   if (trimmed.includes("uc?export=download&id=")) {
+    return trimmed.replace("export=download", "export=view");
+  }
+  if (trimmed.includes("uc?export=view&id=")) {
     return trimmed;
   }
   const fileIdMatch =
@@ -3393,7 +3396,42 @@ const normalizeDriveImageLink = (value) => {
     return trimmed;
   }
   const fileId = fileIdMatch[1];
-  return `https://drive.google.com/uc?export=download&id=${fileId}`;
+  return `https://drive.google.com/uc?export=view&id=${fileId}`;
+};
+
+const extractDriveFileId = (url) => {
+  if (!url) {
+    return "";
+  }
+  const match = url.match(/[?&]id=([^&]+)/) || url.match(/\/d\/([^/]+)/);
+  return match ? match[1] : "";
+};
+
+const applyDriveImageFallback = (img) => {
+  if (!img || img.dataset.driveFallback === "true") {
+    return;
+  }
+  const fileId = extractDriveFileId(img.src);
+  if (!fileId) {
+    return;
+  }
+  img.dataset.driveFallback = "true";
+  img.referrerPolicy = "no-referrer";
+  const candidates = [
+    `https://drive.google.com/uc?export=view&id=${fileId}`,
+    `https://drive.google.com/uc?export=download&id=${fileId}`,
+    `https://drive.google.com/thumbnail?id=${fileId}&sz=w2000`,
+  ];
+  let index = 0;
+  img.addEventListener("error", () => {
+    index += 1;
+    if (index < candidates.length) {
+      img.src = candidates[index];
+    }
+  });
+  if (!img.src.includes("thumbnail")) {
+    img.src = candidates[0];
+  }
 };
 
 const applyCardData = (card, record) => {
@@ -3495,6 +3533,9 @@ const applyCardData = (card, record) => {
     if (img) {
       img.src = normalizedImage;
       img.alt = record.title || img.alt;
+      if (normalizedImage.includes("drive.google.com")) {
+        applyDriveImageFallback(img);
+      }
     }
   }
 };
@@ -3558,121 +3599,10 @@ const selectTemplateCard = (container, index, record) => {
   return standard || featured || locked;
 };
 
-const applyCsvTextToContainer = (container, text) => {
-  if (!text) {
-    return;
-  }
-  const rows = parseCsv(text);
-  if (rows.length < 2) {
-    return;
-  }
-  const headers = rows[0].map((cell) => cell.trim());
-  const records = rows.slice(1).map((row) => {
-    const record = {};
-    headers.forEach((header, index) => {
-      record[header] = (row[index] || "").trim();
-    });
-    return record;
-  });
-  const getCardByIndex = (index) =>
-    container.querySelector(`.product-block[data-csv-index="${index}"]`);
-
-  for (let i = 1; i <= records.length; i += 1) {
-    const record = records[i - 1];
-    let card = getCardByIndex(i);
-    if (!card) {
-      const template = selectTemplateCard(container, i, record);
-      if (!template) {
-        continue;
-      }
-      card = template.cloneNode(true);
-      card.dataset.csvIndex = String(i);
-      card.dataset.generated = "true";
-      container.appendChild(card);
-      normalizeGeneratedCard(card, i, record);
-    }
-
-    if (record?.lock === "true") {
-      const lockId =
-        record.lock_id || card.dataset.projectLock || `lock-${i}`;
-      card.dataset.projectLock = lockId;
-      card.classList.add("project-lock", "is-locked");
-      let payload = null;
-      if (record.lock_payload) {
-        try {
-          payload = JSON.parse(record.lock_payload);
-        } catch {
-          payload = null;
-        }
-      }
-      csvLocksById[lockId] = {
-        password: record.password || null,
-        payload,
-      };
-    } else {
-      card.classList.remove("project-lock", "is-locked");
-    }
-
-    applyCardData(card, record);
-  }
-
-  const cards = [...container.querySelectorAll(".product-block[data-csv-index]")];
-  cards.forEach((card) => {
-    const index = Number(card.dataset.csvIndex || "0");
-    if (index > records.length) {
-      card.remove();
-    }
-  });
-};
-
-const initCsvContent = () => {
-  const containers = [...document.querySelectorAll("[data-csv]")];
-  if (!containers.length) {
-    return Promise.resolve();
-  }
-
-  const resolveCsvUrl = (csvUrl) => {
-    if (window.location.protocol !== "file:") {
-      return csvUrl;
-    }
-    if (csvUrl.startsWith("./data/")) {
-      return `https://raw.githubusercontent.com/kaustubhmokashi/portfolio/main/${csvUrl.slice(2)}`;
-    }
-    if (csvUrl.startsWith("/data/")) {
-      return `https://raw.githubusercontent.com/kaustubhmokashi/portfolio/main${csvUrl}`;
-    }
-    return csvUrl;
-  };
-
-  return Promise.all(
-    containers.map(async (container) => {
-      const csvUrl = container.getAttribute("data-csv");
-      if (!csvUrl) {
-        return;
-      }
-      let text = "";
-      try {
-        const resolvedUrl = resolveCsvUrl(csvUrl);
-        const response = await fetch(resolvedUrl, { cache: "no-store" });
-        if (response.ok) {
-          text = await response.text();
-        }
-      } catch {
-        text = "";
-      }
-      if (!text) {
-        return;
-      }
-      applyCsvTextToContainer(container, text);
-    })
-  );
-};
 
 const ensureUnifiedPlaceholders = () => {
-  const isCaseStudyPath = window.location.pathname.includes("/case-studies/");
-  const placeholderSrc = isCaseStudyPath
-    ? "../assets/paperpal-frame.webp"
-    : "./assets/paperpal-frame.webp";
+  const placeholderSrc =
+    "https://drive.google.com/uc?export=view&id=1vCY-LiFEIUPZOpsce4dYIo6P1pAeN9cp";
   const frames = document.querySelectorAll(".product-visual-frame");
   frames.forEach((frame) => {
     const lockedFrame = frame.closest(".project-lock.is-locked");
@@ -3706,6 +3636,9 @@ const ensureUnifiedPlaceholders = () => {
       img.alt = img.alt || "Product preview placeholder";
     }
     img.src = frameImage;
+    if (frameImage.includes("drive.google.com")) {
+      applyDriveImageFallback(img);
+    }
 
     const label = frame.querySelector(".product-visual-label");
     if (label) {
@@ -3718,97 +3651,61 @@ const ensureUnifiedPlaceholders = () => {
   });
 };
 
-initCsvContent()
-  .catch(() => {})
-  .finally(() => {
-    initProjectLocks();
-    ensureUnifiedPlaceholders();
-    if (typeof updateParallaxTargets === "function") {
-      updateParallaxTargets();
-    }
-  });
-
-const parallaxImages = () => [...document.querySelectorAll("[data-parallax-image]")];
-const parallaxState = new WeakMap();
-let parallaxAnimating = false;
-
-const computeParallaxTarget = (image) => {
-  const card = image.closest(".product-block");
-  if (!card) {
-    return { x: 0, y: 0 };
+if (typeof initCsvContent === "function") {
+  initCsvContent()
+    .catch(() => {})
+    .finally(() => {
+      initProjectLocks();
+      ensureUnifiedPlaceholders();
+      if (typeof updateParallaxTargets === "function") {
+        updateParallaxTargets();
+      }
+    });
+} else {
+  initProjectLocks();
+  ensureUnifiedPlaceholders();
+  if (typeof updateParallaxTargets === "function") {
+    updateParallaxTargets();
   }
-  const viewportHeight = window.innerHeight || 1;
-  const rect = card.getBoundingClientRect();
-  const progress = Math.min(
-    Math.max((viewportHeight - rect.top) / (viewportHeight + rect.height), 0),
-    1
-  );
-  let x = 40;
-  let y = 40;
-  if (progress <= 0.5) {
-    const t = progress / 0.5;
-    x = 40 - 40 * t;
-    y = 40 - 40 * t;
-  } else {
-    const t = (progress - 0.5) / 0.5;
-    x = -40 * t;
-    y = -40 * t;
-  }
-  return { x, y };
-};
+}
 
-const updateParallaxTargets = () => {
-  const images = parallaxImages();
+let parallaxScheduled = false;
+
+const updateParallax = () => {
+  parallaxScheduled = false;
+  const images = document.querySelectorAll(".product-visual-frame img");
   if (!images.length) {
     return;
   }
+  const viewportHeight = window.innerHeight || 1;
   images.forEach((image) => {
-    const target = computeParallaxTarget(image);
-    const state = parallaxState.get(image) || { x: target.x, y: target.y, tx: target.x, ty: target.y };
-    state.tx = target.x;
-    state.ty = target.y;
-    parallaxState.set(image, state);
-  });
-  startParallaxAnimation();
-};
-
-const startParallaxAnimation = () => {
-  if (parallaxAnimating) {
-    return;
-  }
-  parallaxAnimating = true;
-  requestAnimationFrame(stepParallaxAnimation);
-};
-
-const stepParallaxAnimation = () => {
-  const images = parallaxImages();
-  let hasActive = false;
-  images.forEach((image) => {
-    const state = parallaxState.get(image);
-    if (!state) {
+    if (!image.classList.contains("product-visual-image-parallax")) {
+      image.classList.add("product-visual-image-parallax");
+    }
+    const card = image.closest(".product-block");
+    if (!card) {
       return;
     }
-    const dx = state.tx - state.x;
-    const dy = state.ty - state.y;
-    state.x += dx * 0.12;
-    state.y += dy * 0.12;
-    if (Math.abs(dx) > 0.2 || Math.abs(dy) > 0.2) {
-      hasActive = true;
-    } else {
-      state.x = state.tx;
-      state.y = state.ty;
-    }
-    image.style.setProperty("--parallax-x", `${state.x}px`);
-    image.style.setProperty("--parallax-y", `${state.y}px`);
+    const rect = card.getBoundingClientRect();
+    const progress = Math.min(
+      Math.max((viewportHeight - rect.top) / (viewportHeight + rect.height), 0),
+      1
+    );
+    const offset = 40;
+    const x = offset - offset * 2 * progress;
+    const y = offset - offset * 2 * progress;
+    image.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), 0)`;
   });
-
-  if (hasActive) {
-    requestAnimationFrame(stepParallaxAnimation);
-  } else {
-    parallaxAnimating = false;
-  }
 };
 
-updateParallaxTargets();
-window.addEventListener("scroll", updateParallaxTargets, { passive: true });
-window.addEventListener("resize", updateParallaxTargets);
+const scheduleParallax = () => {
+  if (parallaxScheduled) {
+    return;
+  }
+  parallaxScheduled = true;
+  requestAnimationFrame(updateParallax);
+};
+
+scheduleParallax();
+window.addEventListener("scroll", scheduleParallax, { passive: true });
+window.addEventListener("resize", scheduleParallax);
