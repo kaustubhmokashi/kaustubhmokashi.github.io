@@ -7,7 +7,7 @@
     <meta property="og:title" content="Paperpal Reference Library — Case Study" />
     <meta
       property="og:description"
-      content="A case study on building a reference library that turns research files into exportable citations and synced reference sets."
+      content="A slide deck case study on unifying the researcher’s library with the writing flow."
     />
     <meta property="og:image" content="../thumbnail.svg" />
     <meta property="og:type" content="website" />
@@ -15,7 +15,7 @@
     <meta name="twitter:title" content="Paperpal Reference Library — Case Study" />
     <meta
       name="twitter:description"
-      content="A case study on building a reference library that turns research files into exportable citations and synced reference sets."
+      content="A slide deck case study on unifying the researcher’s library with the writing flow."
     />
     <meta name="twitter:image" content="../thumbnail.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -27,7 +27,7 @@
     <link rel="icon" type="image/svg+xml" href="../favicon.svg?v=1" />
     <link rel="stylesheet" href="../styles.css?v=19" />
   </head>
-  <body class="page-live">
+  <body class="page-live page-case-study-deck">
     <a class="site-title site-title-link" href="https://www.kaustubhmokashi.com">KAUSTUBH MOKASHI</a>
     <button
       class="top-menu-toggle"
@@ -52,372 +52,110 @@
     <div class="drag-guide-label" aria-hidden="true">
       <span class="drag-guide-text">dx: 0,  dy: 0</span>
     </div>
-    <main class="page-shell page-shell-centered">
-      <section class="page-panel page-panel-centered page-panel-live" aria-label="Case Study">
-        <p class="page-kicker">Case Study</p>
-        <h1
-          class="page-heading repairable-title"
-          data-repairable-title="case-study-paperpal-title"
-        >
-          <span class="repairable-text-content">Paperpal Reference Library</span>
-          <span
-            class="interactive-corner interactive-corner-top-left text-edit-corner"
-            aria-hidden="true"
-          ></span>
-          <span
-            class="interactive-corner interactive-corner-top-right text-edit-corner"
-            aria-hidden="true"
-          ></span>
-          <span
-            class="interactive-corner interactive-corner-bottom-left text-edit-corner"
-            aria-hidden="true"
-          ></span>
-          <span
-            class="interactive-corner interactive-corner-bottom-right text-edit-corner"
-            aria-hidden="true"
-          ></span>
-        </h1>
-        <p class="page-copy">
-          A reference management experience for academics that converts uploaded files into
-          structured citations, exports them to formats like BibTeX, and syncs with tools such as
-          Zotero so citations can be reused across Paperpal, ChatPDF, Word, and Docs.
-        </p>
-        <div class="case-study-layout">
-          <div class="case-study-section">
-            <p class="product-block-kicker">Why</p>
-            <p class="product-body-copy">
-              It started with a familiar moment I kept hearing in interviews. A researcher opens a
-              draft the night before a submission, sees a handful of citations marked in yellow, and
-              realizes the references list does not match the latest version of the paper. Nothing
-              is technically broken. The file exists. The PDF is in a folder. The reference manager
-              has a copy. But the paper is still missing a volume number, an author order is reversed,
-              or the citation style does not match the journal template. It is not a big error, but
-              it creates a panic spiral because the last mile matters most.
-            </p>
-            <p class="product-body-copy">
-              As we looked closer, the story was consistent across roles. A doctoral student is
-              juggling drafts between Word and Docs, exporting BibTeX, then importing it into a
-              reference manager, then back into the writing tool. A research assistant is helping
-              their lead by cleaning citations, but their updates live in a different tool so nothing
-              stays in sync. A principal investigator has a library of years of citations and is
-              reluctant to move away from a tool that works, even if it is slow. Everyone is moving,
-              but the references are always lagging a step behind.
-            </p>
-            <p class="product-body-copy">
-              The friction did not come from a lack of tooling. It came from how the tools were
-              stitched together. When a paper or reference lives in multiple places, the act of
-              correcting it becomes a game of telephone. Each export or sync is a chance to lose
-              context. Most teams were using some combination of Zotero, a cloud drive, and a writing
-              surface, and they had built a personal set of workarounds to keep things correct. Those
-              workarounds were invisible to anyone outside the team, which meant the cost of
-              maintaining references was carried silently by the people doing the work.
-            </p>
-            <p class="product-body-copy">
-              The biggest insight for us was that the pain was emotional as much as it was
-              procedural. References are proof. They are the academic equivalent of receipts. When
-              they are out of sync, it shakes confidence in the entire body of work. The researcher
-              does not only worry about formatting. They worry about credibility. They worry about
-              trust. They worry about whether the paper is ready to be read. That stress shows up
-              in the hours before a deadline and in the weeks after a revision, when the library is
-              still not stable.
-            </p>
-            <p class="product-body-copy">
-              We also saw how simple actions created unexpected drift. A file upload happens in one
-              place. A citation is pulled in another. A metadata correction is made in a third. Even
-              when tools claimed to sync, the sync was often delayed or partial, so the person doing
-              the work could not rely on it. The more cross tool the workflow became, the more
-              brittle the reference set felt. It was not a single dramatic failure, but a thousand
-              tiny breaks that accumulated into loss of trust.
-            </p>
-            <p class="product-body-copy">
-              That is why we framed the problem as a continuity problem, not a storage problem. We
-              were not trying to make a new library for the sake of it. We were trying to make a
-              place where references could be treated as a stable asset. That stability had to travel
-              across tools, across formats, and across collaborators. The goal was a library that
-              reduced the hidden labor of keeping citations correct, so researchers could focus on
-              the work rather than the maintenance.
-            </p>
-            <p class="product-body-copy">
-              The product goal became clear: design a reference library that behaves like a
-              reliable backbone. It should accept messy real world inputs, convert them into clean
-              structured references, and then keep those references consistent wherever they are used.
-              That meant the library had to be more than a place to drop files. It had to be a
-              reference system that <strong class="case-study-accent">protects trust</strong> through
-              the entire research workflow.
-            </p>
-            <ul class="case-study-list">
-              <li>Uploaded papers did not reliably auto-generate structured references.</li>
-              <li>Export formats like BibTeX and RIS required manual cleanup and reordering.</li>
-              <li>Reference managers fell out of sync when edits happened in other tools.</li>
-              <li>Citations were hard to reuse across Paperpal, ChatPDF, Word, and Docs.</li>
-            </ul>
-            <p class="product-body-copy">
-              The target outcome was to make reference creation, export, and reuse feel like a
-              <strong class="case-study-accent">single continuous flow</strong> instead of a set of
-              disconnected tasks. That meant designing a library that treated references as a living
-              system: a place where files, metadata, and citations stay tied together and can travel
-              with the researcher wherever the writing happens.
-            </p>
-          </div>
-          <div class="case-study-section">
-            <p class="product-block-kicker">What</p>
-            <p class="product-body-copy">
-              To define what we should build, we spent time living inside the existing workflow.
-              That meant watching how people actually move across tools, not how they say they do it.
-              We ran interviews and quick shadowing sessions with researchers, editorial teams, and
-              product specialists who help authors prepare papers for submission. We captured the
-              moments where the workflow broke: uploads that did not parse, metadata that was missing,
-              and formatting steps that felt like a black box. We mapped these steps visually so the
-              team could see how many switches happened before a reference was ready to use.
-            </p>
-            <p class="product-body-copy">
-              We also did a wide review of competitor tools, from full scale reference managers to
-              lighter weight citation helpers. The pattern was clear. Tools were good at storage and
-              export, but they were less confident about continuity across surfaces. Some provided
-              a browser extension, others provided a sync, but the user still had to make decisions
-              about where the source of truth lived. The more complex the workflow, the more fragile
-              it became. That fragility showed up in subtle errors and in the time cost of checking
-              everything after the fact.
-            </p>
-            <p class="product-body-copy">
-              This research gave us a set of guiding principles. First, references should be created
-              immediately, with clear signals that parsing has succeeded or needs help. Second,
-              references should be editable where they live. Users should not need to jump to another
-              tool just to fix a small field. Third, export and sync should be part of the same
-              moment as creation, not an afterthought. Fourth, the library should behave like a
-              trusted spine that can be used across Paperpal, ChatPDF, Word, and Docs without
-              reformatting the same reference repeatedly.
-            </p>
-            <p class="product-body-copy">
-              We then translated those principles into outcomes. The library needed to be an
-              ingestion engine that converts uploads into clean references automatically. It had to
-              support multiple export formats and make those formats feel native, not like add ons.
-              And it needed to stay in sync with external systems such as Zotero without forcing the
-              user to choose a main reference manager. Most importantly, citations pulled from the
-              library had to stay <strong class="case-study-accent">consistent across every surface</strong>.
-            </p>
-            <p class="product-body-copy">
-              The word "library" can sound passive, so we framed it as a workspace. A library implies
-              storage. A workspace implies action. We wanted researchers to feel that this space was
-              active: it parses, corrects, exports, and syncs. That framing helped us decide how to
-              prioritize functions. The top of the page needed to make creation feel safe and fast.
-              The center needed to make scanning and verification feel easy. The right rail needed
-              to make export and sync feel immediate rather than buried.
-            </p>
-            <p class="product-body-copy">
-              We also made some deliberate tradeoffs. We did not try to rebuild the full power of
-              a reference manager in one release. Instead we focused on the most common task: turning
-              files into references and then reusing those references without manual repair. That
-              focus allowed us to ship a strong core without creating feature bloat. The goal was not
-              to replace every tool. The goal was to remove the most painful steps and keep references
-              trustworthy inside the Paperpal ecosystem.
-            </p>
-            <ul class="case-study-list">
-              <li>Auto-generate structured references from uploaded files.</li>
-              <li>Enable exports in BibTeX, RIS, and other standard citation formats.</li>
-              <li>Sync references and files with Zotero as a first‑class action.</li>
-              <li>Surface library citations across Paperpal, ChatPDF, Word, and Docs.</li>
-              <li>Make corrections and edits propagate back to the reference record.</li>
-            </ul>
-            <p class="product-body-copy">
-              This phase also shaped the language of the system. We intentionally framed the library
-              as a reference workspace rather than a static file shelf. The vocabulary (sources,
-              citations, export, sync) was chosen to align with how academics already think about
-              their work, which made the feature feel familiar even though the workflows were being
-              rebuilt from scratch.
-            </p>
-          </div>
-          <div class="case-study-section">
-            <p class="product-block-kicker">Competitor Analysis</p>
-            <p class="product-body-copy">
-              Competitor review clarified where people were already comfortable and where the pain
-              lived. Most tools handled bulk storage and citation export, but they treated sync and
-              multi‑surface reuse as secondary. We cataloged how each tool dealt with ingestion,
-              metadata correction, and export workflows, then mapped gaps around cross‑tool continuity.
-              The most frequent failure points were
-              <strong class="case-study-accent">inconsistent metadata parsing</strong> and the lack of a
-              clear “source of truth” across tools.
-            </p>
-            <div class="case-study-gallery case-study-gallery-compact">
-              <figure class="case-study-figure">
-                <img
-                  src="../assets/case-studies/paperpal/Dashboard%20design/Competitor%20Analysis/image%201.jpg"
-                  alt="Competitor analysis snapshot 1"
-                />
-              </figure>
-              <figure class="case-study-figure">
-                <img
-                  src="../assets/case-studies/paperpal/Dashboard%20design/Competitor%20Analysis/image%202.jpg"
-                  alt="Competitor analysis snapshot 2"
-                />
-              </figure>
-              <figure class="case-study-figure">
-                <img
-                  src="../assets/case-studies/paperpal/Dashboard%20design/Competitor%20Analysis/image%203.jpg"
-                  alt="Competitor analysis snapshot 3"
-                />
-              </figure>
-              <figure class="case-study-figure">
-                <img
-                  src="../assets/case-studies/paperpal/Dashboard%20design/Competitor%20Analysis/image%204.jpg"
-                  alt="Competitor analysis snapshot 4"
-                />
-              </figure>
-            </div>
-          </div>
-          <div class="case-study-section">
-            <p class="product-block-kicker">How</p>
-            <p class="product-body-copy">
-              We structured the solution around three moments:
-              <strong class="case-study-accent">ingestion</strong>,
-              <strong class="case-study-accent">reference editing</strong>, and
-              <strong class="case-study-accent">reuse</strong>. That structure let us build the
-              experience like a story with a beginning, middle, and end, instead of a loose collection
-              of tools. It also gave each part of the interface a clear job to do. Ingestion is about
-              trust, editing is about accuracy, and reuse is about momentum.
-            </p>
-            <p class="product-body-copy">
-              Ingestion needed to feel immediate and dependable. We designed the upload flow to show
-              recognition states, file type identification, and parsing feedback so users could see
-              what the system was doing, not just wait for it. If the system was still extracting
-              metadata, we surfaced that state. If it succeeded, we showed the result instantly. If
-              it needed help, we positioned the correction right next to the extracted fields. The
-              goal was to make the system feel confident and transparent, because that is what earns
-              trust in a workflow that depends on accuracy.
-            </p>
-            <p class="product-body-copy">
-              Reference editing needed to be a review pass, not a separate mode. People told us they
-              wanted to fix references without feeling like they were leaving the library. So we
-              designed inline edits that sit within the list view. Author order, publication year,
-              title formatting, and source type can be corrected in place. The UI keeps the line item
-              stable while fields update, which means the user can scan, edit, and move on without
-              losing their place. We also used subtle visual cues to show what is verified versus
-              what needs attention, which helps the researcher prioritize without reading every field.
-            </p>
-            <p class="product-body-copy">
-              Reuse became the distribution layer. We placed export, sync, and citation access in a
-              dedicated action zone so it is always visible. The right rail acts like a control
-              center: it shows available formats, offers quick export, and highlights the sync status
-              with tools like Zotero. This approach prevents the common trap of burying export inside
-              menus, which creates a disconnect between creation and use. The moment a reference is
-              created, the system makes it clear how it can travel.
-            </p>
-            <p class="product-body-copy">
-              The dashboard layout supports that loop. The left navigation organizes sources and
-              filters without hiding the act of creation. The center area is optimized for scanning
-              references at scale, while the right rail becomes the action surface for export, sync,
-              and citation tools. This layout keeps the library visually stable even when different
-              file types are being uploaded, while giving researchers clear signals about what is
-              ready, what needs review, and what is already synced.
-            </p>
-            <p class="product-body-copy">
-              We designed the information architecture to minimize mode switching. Search, filters,
-              and collections are visible but not dominant. The goal was to make the list of
-              references the hero, since that is where researchers spend most of their time. We kept
-              the density high but the visual hierarchy clear: primary metadata is strong, secondary
-              metadata is quieter, and actions are aligned to the right for quick access. This makes
-              the list feel like a clean inventory rather than a noisy table.
-            </p>
-            <p class="product-body-copy">
-              We also baked in language and microcopy that feels academic without feeling heavy. The
-              action labels use verbs like export, sync, cite, and review. We avoided technical terms
-              that only make sense to reference management experts. The result is a system that feels
-              familiar to long time researchers but approachable to students who are building their
-              first reference set.
-            </p>
-            <p class="product-body-copy">
-              The most important part of this implementation was the relationship between data and
-              trust. Every visual element is designed to answer a simple question: can I rely on this
-              reference? Progress states show when parsing is done. Edit states show when a field has
-              been changed. Sync states show when an external tool is up to date. These signals keep
-              the user grounded. They reduce the fear that a reference is out of date or that a
-              citation was copied from a stale source.
-            </p>
-            <p class="product-body-copy">
-              Finally, we made sure the library works as a shared foundation across the Paperpal
-              ecosystem. Citations pulled in ChatPDF or writing surfaces are tied back to the same
-              reference record, so the user does not need to rebuild the same citation in multiple
-              places. That creates a sense of continuity that was missing in the earlier workflow.
-              The story ends where it began: researchers trust that their references will hold,
-              which lets them focus on the research itself.
-            </p>
-            <ul class="case-study-list">
-              <li>Upload → parse → reference creation with progress states.</li>
-              <li>Editable reference cards to fix metadata and author order.</li>
-              <li>Export formats and Zotero sync from a unified action panel.</li>
-              <li>Consistent citation picker used across Paperpal, ChatPDF, and Docs.</li>
-              <li>Library filters for file type, status, and collection.</li>
-            </ul>
-          </div>
-          <div class="case-study-section">
-            <p class="product-block-kicker">User Flows</p>
-            <p class="product-body-copy">
-              The key flows cover three sequences:
-              <strong class="case-study-accent">add sources</strong>,
-              <strong class="case-study-accent">verify references</strong>, and
-              <strong class="case-study-accent">export or sync</strong>. The flow screens below show how
-              a single upload becomes a stable reference set and then reappears inside the writing
-              experience as a reusable citation.
-            </p>
-            <div class="case-study-gallery">
-              <figure class="case-study-figure">
-                <img
-                  src="../assets/case-studies/paperpal/Dashboard%20design/User%20Flow%20screens/Empty-1.jpg"
-                  alt="Upload entry point with file tray and parsing status"
-                />
-                <figcaption>Upload entry point with file tray and parsing status.</figcaption>
-              </figure>
-              <figure class="case-study-figure">
-                <img
-                  src="../assets/case-studies/paperpal/Dashboard%20design/User%20Flow%20screens/Empty-2.jpg"
-                  alt="Reference list view with status chips and metadata preview"
-                />
-                <figcaption>Reference list view with status chips and metadata preview.</figcaption>
-              </figure>
-              <figure class="case-study-figure">
-                <img
-                  src="../assets/case-studies/paperpal/Dashboard%20design/User%20Flow%20screens/Empty-3.jpg"
-                  alt="Reference detail state with editable fields and verification cues"
-                />
-                <figcaption>Reference detail state with editable fields and verification cues.</figcaption>
-              </figure>
-              <figure class="case-study-figure">
-                <img
-                  src="../assets/case-studies/paperpal/Dashboard%20design/User%20Flow%20screens/Empty-4.jpg"
-                  alt="Export and sync panel showing citation formats and Zotero action"
-                />
-                <figcaption>Export and sync panel showing citation formats and Zotero action.</figcaption>
-              </figure>
-            </div>
-          </div>
-          <div class="case-study-section">
-            <p class="product-block-kicker">Outcome & Next Steps</p>
-            <p class="product-body-copy">
-              The reference library establishes a consistent foundation for citation work across the
-              Paperpal ecosystem. The next layer is to expand collaboration signals (shared collections,
-              team ownership, and version history) while refining automated extraction accuracy for
-              multi‑author and multi‑volume publications. As the system scales, the goal is to make
-              references feel as reliable as the documents they were derived from.
-            </p>
-          </div>
+    <main class="page-shell page-shell-centered case-study-deck-shell">
+      <section class="case-study-deck" aria-label="Paperpal Reference Library Slide Deck">
+        <div class="case-study-deck-stage" role="region" aria-live="polite">
+          <article class="case-study-slide is-active" data-slide="1">
+            <img
+              class="case-study-slide-image"
+              src="https://lh3.googleusercontent.com/d/1r2Dfu4595pRpEpPvk570K-UHS8yLzKSc"
+              alt="Slide 1 placeholder"
+            />
+          </article>
+          <article class="case-study-slide" data-slide="2">
+            <img
+              class="case-study-slide-image"
+              src="https://lh3.googleusercontent.com/d/1r2Dfu4595pRpEpPvk570K-UHS8yLzKSc"
+              alt="Slide 2 placeholder"
+            />
+          </article>
+          <article class="case-study-slide" data-slide="3">
+            <img
+              class="case-study-slide-image"
+              src="https://lh3.googleusercontent.com/d/1r2Dfu4595pRpEpPvk570K-UHS8yLzKSc"
+              alt="Slide 3 placeholder"
+            />
+          </article>
+          <article class="case-study-slide" data-slide="4">
+            <img
+              class="case-study-slide-image"
+              src="https://lh3.googleusercontent.com/d/1r2Dfu4595pRpEpPvk570K-UHS8yLzKSc"
+              alt="Slide 4 placeholder"
+            />
+          </article>
+          <article class="case-study-slide" data-slide="5">
+            <img
+              class="case-study-slide-image"
+              src="https://lh3.googleusercontent.com/d/1r2Dfu4595pRpEpPvk570K-UHS8yLzKSc"
+              alt="Slide 5 placeholder"
+            />
+          </article>
+          <article class="case-study-slide" data-slide="6">
+            <img
+              class="case-study-slide-image"
+              src="https://lh3.googleusercontent.com/d/1r2Dfu4595pRpEpPvk570K-UHS8yLzKSc"
+              alt="Slide 6 placeholder"
+            />
+          </article>
+          <article class="case-study-slide" data-slide="7">
+            <img
+              class="case-study-slide-image"
+              src="https://lh3.googleusercontent.com/d/1r2Dfu4595pRpEpPvk570K-UHS8yLzKSc"
+              alt="Slide 7 placeholder"
+            />
+          </article>
+          <article class="case-study-slide" data-slide="8">
+            <img
+              class="case-study-slide-image"
+              src="https://lh3.googleusercontent.com/d/1r2Dfu4595pRpEpPvk570K-UHS8yLzKSc"
+              alt="Slide 8 placeholder"
+            />
+          </article>
+          <article class="case-study-slide" data-slide="9">
+            <img
+              class="case-study-slide-image"
+              src="https://lh3.googleusercontent.com/d/1r2Dfu4595pRpEpPvk570K-UHS8yLzKSc"
+              alt="Slide 9 placeholder"
+            />
+          </article>
+          <article class="case-study-slide" data-slide="10">
+            <img
+              class="case-study-slide-image"
+              src="https://lh3.googleusercontent.com/d/1r2Dfu4595pRpEpPvk570K-UHS8yLzKSc"
+              alt="Slide 10 placeholder"
+            />
+          </article>
+        </div>
+        <div class="case-study-deck-controls">
+          <button
+            class="case-study-deck-button case-study-deck-arrow product-block-link"
+            type="button"
+            data-deck-prev
+            aria-label="Previous slide"
+          >
+            <svg class="cta-arrow" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M5 12L12 5L13.4 6.4L9.8 10H19V12H9.8L13.4 15.6L12 17L5 12Z"
+              />
+            </svg>
+            <span class="case-study-deck-label">Previous</span>
+          </button>
+          <button
+            class="case-study-deck-button case-study-deck-arrow product-block-link"
+            type="button"
+            data-deck-next
+            aria-label="Next slide"
+          >
+            <span class="case-study-deck-label">Next</span>
+            <svg class="cta-arrow" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M14 5L21 12L14 19L12.6 17.6L16.2 14H7V12H16.2L12.6 8.4L14 5Z"
+              />
+            </svg>
+          </button>
         </div>
       </section>
     </main>
-    <div class="case-study-lightbox" aria-hidden="true">
-      <button class="case-study-lightbox-close" type="button" aria-label="Close slideshow">
-        Close
-      </button>
-      <button class="case-study-lightbox-nav case-study-lightbox-prev" type="button" aria-label="Previous image">
-        Prev
-      </button>
-      <div class="case-study-lightbox-frame" role="dialog" aria-modal="true" aria-label="Case study image viewer">
-        <img class="case-study-lightbox-image" alt="" />
-        <p class="case-study-lightbox-caption"></p>
-      </div>
-      <button class="case-study-lightbox-nav case-study-lightbox-next" type="button" aria-label="Next image">
-        Next
-      </button>
-    </div>
     <div class="personal-cursor" aria-hidden="true">
       <svg
         width="22"
@@ -475,65 +213,93 @@
       <span class="personal-cursor-label">You</span>
     </div>
     <div class="return-cursor" aria-hidden="true">
-      <svg
-        width="22"
-        height="22"
-        viewBox="0 0 22 22"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <g filter="url(#return-cursor-shadow)">
-          <path
-            d="M7.70778 17.5249L2.56947 2.844C2.28453 2.02988 3.09489 1.2611 3.89289 1.58848L17.9799 7.36777C18.9193 7.75316 18.7528 9.13125 17.7487 9.28187L12.0025 10.1438C11.5989 10.2043 11.2725 10.5041 11.178 10.9011L9.62444 17.4261C9.39316 18.3975 8.03764 18.4673 7.70778 17.5249Z"
-            fill="#29A146"
-            stroke="#FFF"
-            stroke-width="1"
-          />
-        </g>
-        <defs>
-          <filter
-            id="return-cursor-shadow"
-            x="0.00000977516"
-            y="-0.00000548363"
-            width="21.1108"
-            height="21.7046"
-            filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
-          >
-            <feFlood flood-opacity="0" result="BackgroundImageFix" />
-            <feColorMatrix
-              in="SourceAlpha"
-              type="matrix"
-              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-              result="hardAlpha"
-            />
-            <feOffset dy="1" />
-            <feGaussianBlur stdDeviation="1.005" />
-            <feComposite in2="hardAlpha" operator="out" />
-            <feColorMatrix
-              type="matrix"
-              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.28 0"
-            />
-            <feBlend
-              mode="normal"
-              in2="BackgroundImageFix"
-              result="effect1_dropShadow_134_2658"
-            />
-            <feBlend
-              mode="normal"
-              in="SourceGraphic"
-              in2="effect1_dropShadow_134_2658"
-              result="shape"
-            />
-          </filter>
-        </defs>
+      <svg class="cursor-icon" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <path
+          d="M3 2L21 12L13 14L10 22L3 2Z"
+          fill="#29A146"
+          stroke="#FFF"
+          stroke-width="1"
+          style="filter: drop-shadow(0 1px 2.01px rgba(0, 0, 0, 0.28));"
+        />
       </svg>
-      <span class="personal-cursor-label return-cursor-label">
-        <span class="return-cursor-name">Kaustubh Mokashi</span>
-        <span class="return-cursor-comment" data-full-comment=""></span>
-        <span class="return-cursor-prompt"></span>
-      </span>
+      <span class="return-cursor-label">Kaustubh Mokashi</span>
+      <span class="return-cursor-prompt"></span>
     </div>
-    <script src="../script.js?v=18"></script>
+    <script src="../version.js?v=1.0.4"></script>
+    <script src="../script.js?v=1.0.4"></script>
+    <script>
+      const slides = Array.from(document.querySelectorAll(".case-study-slide"));
+      const totalEl = document.querySelector("[data-deck-total]");
+      const indexEl = document.querySelector("[data-deck-index]");
+      const prevBtn = document.querySelector("[data-deck-prev]");
+      const nextBtn = document.querySelector("[data-deck-next]");
+      const deck = document.querySelector(".case-study-deck-stage");
+      let activeIndex = 0;
+
+      const setSlide = (index) => {
+        const nextIndex = Math.max(0, Math.min(slides.length - 1, index));
+        slides.forEach((slide, slideIndex) => {
+          slide.classList.toggle("is-active", slideIndex === nextIndex);
+        });
+        activeIndex = nextIndex;
+        if (indexEl) {
+          indexEl.textContent = String(nextIndex + 1).padStart(2, "0");
+        }
+      };
+
+      if (totalEl) {
+        totalEl.textContent = String(slides.length).padStart(2, "0");
+      }
+
+      prevBtn?.addEventListener("click", () => setSlide(activeIndex - 1));
+      nextBtn?.addEventListener("click", () => setSlide(activeIndex + 1));
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowRight" || event.key === "PageDown") {
+          event.preventDefault();
+          setSlide(activeIndex + 1);
+        }
+        if (event.key === "ArrowLeft" || event.key === "PageUp") {
+          event.preventDefault();
+          setSlide(activeIndex - 1);
+        }
+      });
+
+      let touchStartX = 0;
+      let touchActive = false;
+
+      deck?.addEventListener("touchstart", (event) => {
+        if (event.touches.length !== 1) return;
+        touchActive = true;
+        touchStartX = event.touches[0].clientX;
+      });
+
+      deck?.addEventListener("touchend", (event) => {
+        if (!touchActive) return;
+        const touchEndX = event.changedTouches[0]?.clientX || 0;
+        const deltaX = touchEndX - touchStartX;
+        if (Math.abs(deltaX) > 40) {
+          if (deltaX < 0) {
+            setSlide(activeIndex + 1);
+          } else {
+            setSlide(activeIndex - 1);
+          }
+        }
+        touchActive = false;
+      });
+
+      const baseWidth = 1920;
+      const baseHeight = 1080;
+      const resizeDeck = () => {
+        if (!deck) return;
+        const stageWidth = deck.clientWidth || baseWidth;
+        const scale = stageWidth / baseWidth;
+        deck.style.setProperty("--deck-scale", scale.toFixed(4));
+        deck.style.height = `${baseHeight * scale}px`;
+      };
+
+      window.addEventListener("resize", resizeDeck);
+      resizeDeck();
+    </script>
   </body>
 </html>
