@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebP Forge | Kaustubh Mokashi</title>
+    <meta property="og:title" content="WebP Forge — Kaustubh Mokashi" />
+    <meta
+      property="og:description"
+      content="Convert JPG, PNG, SVG, and more into WebP with quality, scale, and metadata controls."
+    />
+    <meta property="og:image" content="../thumbnail.svg" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="WebP Forge — Kaustubh Mokashi" />
+    <meta
+      name="twitter:description"
+      content="Convert JPG, PNG, SVG, and more into WebP with quality, scale, and metadata controls."
+    />
+    <meta name="twitter:image" content="../thumbnail.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Jersey+15&family=Noto+Sans:wght@300;400;500;600&family=Oswald:wght@400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg?v=1" />
+    <link rel="stylesheet" href="../styles.css?v=19" />
+  </head>
+  <body class="page-passion">
+    <a class="site-title site-title-link" href="https://www.kaustubhmokashi.com">KAUSTUBH MOKASHI</a>
+    <button
+      class="top-menu-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="primary-menu"
+      aria-label="Open menu"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="top-menu" id="primary-menu" aria-label="Primary">
+      <a class="top-menu-link" href="../live-products.html">Live Products</a>
+      <a class="top-menu-link is-active" href="../passion-projects.html">Passion projects</a>
+      <a class="top-menu-link" href="../case-studies.html">Case Studies</a>
+      <a class="top-menu-link" href="../resume.html">Resume</a>
+    </nav>
+    <svg class="drag-guide" aria-hidden="true">
+      <line class="drag-guide-line" x1="0" y1="0" x2="0" y2="0"></line>
+    </svg>
+    <div class="drag-guide-label" aria-hidden="true">
+      <span class="drag-guide-text">dx: 0,  dy: 0</span>
+    </div>
+    <main class="page-shell page-shell-centered">
+      <section class="page-panel page-panel-centered page-panel-passion webp-panel" aria-label="WebP Forge">
+        <p class="page-kicker">Passion Project</p>
+        <h1 class="page-heading">WebP Forge</h1>
+        <p class="drive-link-subtitle">
+          Convert JPG, PNG, SVG, GIF, AVIF, and more into WebP with live size comparisons and
+          export controls. Everything runs locally in your browser.
+        </p>
+
+        <div class="webp-tool" id="webpTool">
+          <div class="webp-dropzone" id="webpDropzone">
+            <input type="file" id="webpFileInput" accept="image/*" />
+            <span class="webp-dropzone-icon">🖼</span>
+            <h2>Drop your image here</h2>
+            <p>PNG · JPG · GIF · AVIF · SVG · BMP · TIFF — or click to browse</p>
+          </div>
+
+          <div class="webp-controls">
+            <div class="webp-ctrl-group">
+              <div class="webp-ctrl-label">Quality <span class="val" id="webpQualVal">85%</span></div>
+              <input type="range" id="webpQuality" min="1" max="100" value="85" />
+              <div class="webp-ctrl-helper">
+                Lossy compression level. Lower = smaller file, more artifacts.
+              </div>
+            </div>
+
+            <div class="webp-ctrl-group">
+              <div class="webp-ctrl-label">Scale <span class="val" id="webpScaleVal">100%</span></div>
+              <input type="range" id="webpScale" min="10" max="100" value="100" step="5" />
+              <div class="webp-ctrl-helper">
+                Resize the canvas before encoding. Huge impact on file size.
+              </div>
+            </div>
+
+            <div class="webp-ctrl-group">
+              <div class="webp-ctrl-label">Blur (pre-encode) <span class="val" id="webpBlurVal">0px</span></div>
+              <input type="range" id="webpBlur" min="0" max="10" value="0" step="0.5" />
+              <div class="webp-ctrl-helper">
+                Softening before compression helps reduce file size further.
+              </div>
+            </div>
+
+            <div class="webp-toggle-row">
+              <div class="webp-toggle-block">
+                <div class="webp-ctrl-label">Lossless mode</div>
+                <label class="webp-toggle">
+                  <input type="checkbox" id="webpLossless" />
+                  <span class="webp-toggle-slider"></span>
+                </label>
+                <span class="webp-toggle-label">Encode losslessly (larger file, pixel-perfect)</span>
+              </div>
+              <div class="webp-toggle-block">
+                <div class="webp-ctrl-label">Strip metadata</div>
+                <label class="webp-toggle">
+                  <input type="checkbox" id="webpStripMeta" checked />
+                  <span class="webp-toggle-slider"></span>
+                </label>
+                <span class="webp-toggle-label">Remove EXIF / colour profile data</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="webp-status-line" id="webpStatusLine">Load an image to get started.</div>
+
+          <div class="webp-preview-grid">
+            <div class="webp-preview-card">
+              <div class="webp-preview-header">
+                <span class="tag">Original</span>
+                <span class="size-badge original" id="webpOrigSizeBadge">—</span>
+              </div>
+              <div class="webp-preview-img-wrap" id="webpOrigWrap">
+                <div class="webp-preview-placeholder">Original preview</div>
+              </div>
+            </div>
+            <div class="webp-preview-card">
+              <div class="webp-preview-header">
+                <span class="tag">WebP Output</span>
+                <span class="size-badge" id="webpSizeBadge">—</span>
+              </div>
+              <div class="webp-preview-img-wrap" id="webpWrap">
+                <div class="webp-preview-placeholder">WebP preview</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="webp-size-comparison">
+            <div class="webp-size-bar-wrap">
+              <div class="webp-size-bar-label">
+                <span>Original</span>
+                <span id="webpOrigSizeText">—</span>
+              </div>
+              <div class="webp-size-bar">
+                <div class="webp-size-bar-fill orig" style="width: 100%" id="webpOrigBar"></div>
+              </div>
+              <div class="webp-size-bar-label">
+                <span>WebP</span>
+                <span id="webpSizeText">—</span>
+              </div>
+              <div class="webp-size-bar">
+                <div class="webp-size-bar-fill webp" style="width: 0%" id="webpBar"></div>
+              </div>
+            </div>
+            <div class="webp-saving-pill" id="webpSavingPill">Awaiting<br />image</div>
+          </div>
+
+          <button class="webp-download-btn" id="webpDownloadBtn" disabled>Download WebP</button>
+        </div>
+      </section>
+    </main>
+    <div class="personal-cursor" aria-hidden="true">
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 22 22"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g filter="url(#personal-cursor-shadow)">
+          <path
+            d="M7.70778 17.5249L2.56947 2.844C2.28453 2.02988 3.09489 1.2611 3.89289 1.58848L17.9799 7.36777C18.9193 7.75316 18.7528 9.13125 17.7487 9.28187L12.0025 10.1438C11.5989 10.2043 11.2725 10.5041 11.178 10.9011L9.62444 17.4261C9.39316 18.3975 8.03764 18.4673 7.70778 17.5249Z"
+            fill="#FFF"
+            stroke="#FFF"
+            stroke-width="1"
+          />
+        </g>
+        <defs>
+          <filter
+            id="personal-cursor-shadow"
+            x="0.00000977516"
+            y="-0.00000548363"
+            width="21.1108"
+            height="21.7046"
+            filterUnits="userSpaceOnUse"
+            color-interpolation-filters="sRGB"
+          >
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feColorMatrix
+              in="SourceAlpha"
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+              result="hardAlpha"
+            />
+            <feOffset dy="1" />
+            <feGaussianBlur stdDeviation="1.005" />
+            <feComposite in2="hardAlpha" operator="out" />
+            <feColorMatrix
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.28 0"
+            />
+            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_134_2658" />
+            <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_134_2658" result="shape" />
+          </filter>
+        </defs>
+      </svg>
+      <span class="personal-cursor-label">You</span>
+    </div>
+    <div class="return-cursor" aria-hidden="true">
+      <svg class="cursor-icon" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <path
+          d="M3 2L21 12L13 14L10 22L3 2Z"
+          fill="#29A146"
+          stroke="#FFF"
+          stroke-width="1"
+          style="filter: drop-shadow(0 1px 2.01px rgba(0, 0, 0, 0.28));"
+        />
+      </svg>
+      <span class="return-cursor-label">Kaustubh Mokashi</span>
+      <span class="return-cursor-prompt"></span>
+    </div>
+    <script src="../version.js?v=1.0.7"></script>
+    <script src="../script.js?v=1.0.7"></script>
+    <script>
+      const fileInput = document.getElementById("webpFileInput");
+      const dropzone = document.getElementById("webpDropzone");
+      const qualSlider = document.getElementById("webpQuality");
+      const scaleSlider = document.getElementById("webpScale");
+      const blurSlider = document.getElementById("webpBlur");
+      const losslessChk = document.getElementById("webpLossless");
+      const stripChk = document.getElementById("webpStripMeta");
+      const qualVal = document.getElementById("webpQualVal");
+      const scaleVal = document.getElementById("webpScaleVal");
+      const blurVal = document.getElementById("webpBlurVal");
+      const statusLine = document.getElementById("webpStatusLine");
+      const origWrap = document.getElementById("webpOrigWrap");
+      const webpWrap = document.getElementById("webpWrap");
+      const origSizeBadge = document.getElementById("webpOrigSizeBadge");
+      const webpSizeBadge = document.getElementById("webpSizeBadge");
+      const origSizeText = document.getElementById("webpOrigSizeText");
+      const webpSizeText = document.getElementById("webpSizeText");
+      const origBar = document.getElementById("webpOrigBar");
+      const webpBar = document.getElementById("webpBar");
+      const savingPill = document.getElementById("webpSavingPill");
+      const downloadBtn = document.getElementById("webpDownloadBtn");
+
+      let originalImage = null;
+      let originalSize = 0;
+      let currentWebpDataURL = null;
+      let convertTimer = null;
+      let originalFilename = "image";
+
+      function fmtBytes(bytes) {
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+      }
+
+      dropzone.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        dropzone.classList.add("drag-over");
+      });
+      dropzone.addEventListener("dragleave", () => dropzone.classList.remove("drag-over"));
+      dropzone.addEventListener("drop", (event) => {
+        event.preventDefault();
+        dropzone.classList.remove("drag-over");
+        const file = event.dataTransfer.files[0];
+        if (file && file.type.startsWith("image/")) loadFile(file);
+      });
+      fileInput.addEventListener("change", (event) => {
+        if (event.target.files[0]) loadFile(event.target.files[0]);
+      });
+
+      function loadFile(file) {
+        originalSize = file.size;
+        originalFilename = file.name.replace(/\.[^.]+$/, "");
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            originalImage = img;
+            origWrap.innerHTML = "";
+            const display = new Image();
+            display.src = ev.target.result;
+            display.style.maxWidth = "100%";
+            display.style.maxHeight = "100%";
+            display.style.objectFit = "contain";
+            display.style.display = "block";
+            origWrap.appendChild(display);
+            origSizeBadge.textContent = fmtBytes(originalSize);
+            origSizeText.textContent = fmtBytes(originalSize);
+            statusLine.textContent = `Loaded: ${file.name} — ${img.naturalWidth}×${img.naturalHeight}px`;
+            statusLine.className = "webp-status-line";
+            scheduleConvert();
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      qualSlider.addEventListener("input", () => {
+        qualVal.textContent = `${qualSlider.value}%`;
+        scheduleConvert();
+      });
+      scaleSlider.addEventListener("input", () => {
+        scaleVal.textContent = `${scaleSlider.value}%`;
+        scheduleConvert();
+      });
+      blurSlider.addEventListener("input", () => {
+        blurVal.textContent = `${blurSlider.value}px`;
+        scheduleConvert();
+      });
+      losslessChk.addEventListener("change", scheduleConvert);
+      stripChk.addEventListener("change", scheduleConvert);
+
+      function scheduleConvert() {
+        if (!originalImage) return;
+        clearTimeout(convertTimer);
+        statusLine.textContent = "Re-encoding…";
+        statusLine.className = "webp-status-line processing";
+        convertTimer = setTimeout(doConvert, 200);
+      }
+
+      function doConvert() {
+        if (!originalImage) return;
+        const scale = scaleSlider.value / 100;
+        const quality = qualSlider.value / 100;
+        const blurPx = parseFloat(blurSlider.value);
+        const lossless = losslessChk.checked;
+
+        const width = Math.max(1, Math.round(originalImage.naturalWidth * scale));
+        const height = Math.max(1, Math.round(originalImage.naturalHeight * scale));
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+
+        if (blurPx > 0) ctx.filter = `blur(${blurPx}px)`;
+        ctx.drawImage(originalImage, 0, 0, width, height);
+        ctx.filter = "none";
+
+        const dataURL = lossless
+          ? canvas.toDataURL("image/webp")
+          : canvas.toDataURL("image/webp", quality);
+
+        currentWebpDataURL = dataURL;
+
+        const base64Data = dataURL.split(",")[1] || "";
+        const padding = base64Data.endsWith("==") ? 2 : base64Data.endsWith("=") ? 1 : 0;
+        const estimatedBytes = Math.floor(base64Data.length * 0.75) - padding;
+
+        webpWrap.innerHTML = "";
+        const img = new Image();
+        img.src = dataURL;
+        img.style.maxWidth = "100%";
+        img.style.maxHeight = "100%";
+        img.style.objectFit = "contain";
+        img.style.display = "block";
+        webpWrap.appendChild(img);
+
+        webpSizeBadge.textContent = fmtBytes(estimatedBytes);
+        webpSizeText.textContent = fmtBytes(estimatedBytes);
+
+        const ratio = estimatedBytes / originalSize;
+        webpBar.style.width = `${Math.min(100, ratio * 100)}%`;
+        origBar.style.width = "100%";
+
+        const saved = 1 - ratio;
+        if (saved > 0) {
+          savingPill.innerHTML = `↓ ${(saved * 100).toFixed(1)}%<br>smaller`;
+          savingPill.className = "webp-saving-pill";
+        } else {
+          savingPill.innerHTML = `↑ ${((-saved) * 100).toFixed(1)}%<br>larger`;
+          savingPill.className = "webp-saving-pill negative";
+        }
+
+        downloadBtn.disabled = false;
+        statusLine.textContent = `Output: ${width}×${height}px · WebP · ~${fmtBytes(estimatedBytes)}`;
+        statusLine.className = "webp-status-line";
+      }
+
+      downloadBtn.addEventListener("click", () => {
+        if (!currentWebpDataURL) return;
+        const link = document.createElement("a");
+        link.href = currentWebpDataURL;
+        link.download = `${originalFilename}.webp`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    </script>
+  </body>
+</html>
