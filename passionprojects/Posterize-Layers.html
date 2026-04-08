@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ToneSplit Posterizer | Kaustubh Mokashi</title>
+    <meta property="og:title" content="ToneSplit Posterizer — Kaustubh Mokashi" />
+    <meta
+      property="og:description"
+      content="Posterize photos, generate high-contrast layers, and export each tone for print workflows."
+    />
+    <meta property="og:image" content="../thumbnail.svg" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ToneSplit Posterizer — Kaustubh Mokashi" />
+    <meta
+      name="twitter:description"
+      content="Posterize photos, generate high-contrast layers, and export each tone for print workflows."
+    />
+    <meta name="twitter:image" content="../thumbnail.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Jersey+15&family=Noto+Sans:wght@300;400;500;600&family=Oswald:wght@400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg?v=1" />
+    <link rel="stylesheet" href="../styles.css?v=19" />
+  </head>
+  <body class="page-passion posterize-page">
+    <a class="site-title site-title-link" href="https://www.kaustubhmokashi.com">KAUSTUBH MOKASHI</a>
+    <button
+      class="top-menu-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="primary-menu"
+      aria-label="Open menu"
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="top-menu" id="primary-menu" aria-label="Primary">
+      <a class="top-menu-link" href="../live-products.html">Live Products</a>
+      <a class="top-menu-link is-active" href="../passion-projects.html">Passion projects</a>
+      <a class="top-menu-link" href="../case-studies.html">Case Studies</a>
+      <a class="top-menu-link" href="../resume.html">Resume</a>
+    </nav>
+    <svg class="drag-guide" aria-hidden="true">
+      <line class="drag-guide-line" x1="0" y1="0" x2="0" y2="0"></line>
+    </svg>
+    <div class="drag-guide-label" aria-hidden="true">
+      <span class="drag-guide-text">dx: 0,  dy: 0</span>
+    </div>
+    <main class="page-shell page-shell-centered">
+      <section class="page-panel page-panel-centered page-panel-passion posterize-panel" aria-label="ToneSplit Posterizer">
+        <p class="page-kicker">Passion Project</p>
+        <h1 class="page-heading">ToneSplit Posterizer</h1>
+        <p class="drive-link-subtitle">
+          Convert photos to high-contrast black & white, posterize tonal bands, and export each
+          shade as a downloadable layer for print, stencil, and screen workflows.
+        </p>
+
+        <div class="posterize-tool">
+          <div class="posterize-container" id="posterizeEditor">
+            <header class="posterize-header">
+              <h2>Image Posterizer</h2>
+              <p>Upload, tune, and generate layered outputs.</p>
+            </header>
+
+            <div class="posterize-progress">
+              <div class="posterize-step active" id="step1Indicator">
+                <div class="posterize-step-number">1</div>
+                <span>Upload & Edit</span>
+              </div>
+              <div class="posterize-divider"></div>
+              <div class="posterize-step" id="step2Indicator">
+                <div class="posterize-step-number">2</div>
+                <span>View Layers</span>
+              </div>
+            </div>
+
+            <div class="posterize-main">
+              <div class="posterize-controls">
+                <div class="posterize-panel-header">Controls</div>
+
+                <div class="posterize-upload" id="uploadArea">
+                  <div class="posterize-upload-icon">📁</div>
+                  <div class="posterize-upload-text">Click to upload or drag & drop</div>
+                  <div class="posterize-upload-subtext">JPG, PNG (Max 10MB)</div>
+                  <div class="posterize-upload-filename" id="uploadFilename"></div>
+                  <input type="file" id="fileInput" accept="image/*" />
+                </div>
+
+                <div class="posterize-section">
+                  <div class="posterize-section-title">Tonal Settings</div>
+                  <div class="posterize-control-group">
+                    <label>
+                      Tonal Shades
+                      <span class="posterize-value-display" id="shadesValue">4</span>
+                    </label>
+                    <input type="range" id="shades" min="2" max="8" value="4" step="1" />
+                  </div>
+                  <div class="posterize-control-group">
+                    <label>
+                      Contrast Strength
+                      <span class="posterize-value-display" id="contrastValue">50%</span>
+                    </label>
+                    <input type="range" id="contrast" min="0" max="100" value="50" step="1" />
+                  </div>
+                  <div class="posterize-control-group">
+                    <label>
+                      Brightness
+                      <span class="posterize-value-display" id="brightnessValue">0</span>
+                    </label>
+                    <input type="range" id="brightness" min="-50" max="50" value="0" step="1" />
+                  </div>
+                </div>
+
+                <div class="posterize-section">
+                  <div class="posterize-section-title">Distribution & Effects</div>
+                  <div class="posterize-control-group">
+                    <label>Distribution Method</label>
+                    <select id="distribution">
+                      <option value="luminosity">Luminosity (Recommended)</option>
+                      <option value="average">Average RGB</option>
+                      <option value="desaturate">Desaturated</option>
+                      <option value="red">Red Channel</option>
+                      <option value="green">Green Channel</option>
+                      <option value="blue">Blue Channel</option>
+                    </select>
+                  </div>
+                  <div class="posterize-control-group">
+                    <label>Edge Enhancement</label>
+                    <select id="edge">
+                      <option value="none">None</option>
+                      <option value="light">Light</option>
+                      <option value="medium">Medium</option>
+                      <option value="strong">Strong</option>
+                    </select>
+                  </div>
+                  <div class="posterize-control-group posterize-inline">
+                    <label class="posterize-checkbox">
+                      <input type="checkbox" id="vectorize" />
+                      Vector-like Sharp Edges
+                    </label>
+                  </div>
+                  <div class="posterize-control-group" id="edgeThresholdGroup" style="display: none;">
+                    <label>
+                      Smoothness
+                      <span class="posterize-value-display" id="edgeThresholdValue">50%</span>
+                    </label>
+                    <input type="range" id="edgeThreshold" min="0" max="100" value="50" step="1" />
+                  </div>
+                </div>
+
+                <div class="posterize-button-group">
+                  <button class="posterize-btn posterize-btn-primary" id="nextStepBtn" disabled>
+                    Next: View Separated Layers
+                  </button>
+                  <button class="posterize-btn posterize-btn-secondary" id="downloadBtn" disabled>
+                    Download PNG (4x)
+                  </button>
+                  <button class="posterize-btn posterize-btn-secondary" id="downloadJpgBtn" disabled>
+                    Download JPG (4x)
+                  </button>
+                </div>
+
+                <div class="posterize-success" id="successMessage">
+                  <span>✓</span>
+                  <span>Download started!</span>
+                </div>
+
+                <div class="posterize-info">
+                  <strong>Quick Tips</strong>
+                  • Start with 4 shades for balanced results<br />
+                  • Luminosity works best for portraits<br />
+                  • Enable vector mode for laser cutting<br />
+                  • All downloads are 4x upscaled
+                </div>
+              </div>
+
+                <div class="posterize-preview">
+                  <div class="posterize-preview-header">
+                    <h3>Preview</h3>
+                  <div class="posterize-toggle">
+                    <button class="posterize-toggle-btn" id="splitBtn">Split View</button>
+                    <button class="posterize-toggle-btn active" id="resultBtn">Result Only</button>
+                  </div>
+                </div>
+                <div class="posterize-canvas-container" id="canvasContainer">
+                  <div class="posterize-placeholder">
+                    <div class="posterize-placeholder-icon">🖼️</div>
+                    <div><strong>Upload an image to get started</strong></div>
+                    <div class="posterize-placeholder-note">Drag & drop or click the upload area</div>
+                  </div>
+                  <div class="posterize-processing" id="processingIndicator">
+                    <div class="posterize-spinner"></div>
+                    <span>Processing image...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="posterize-container" id="posterizeLayers" style="display: none;">
+            <header class="posterize-header">
+              <h2>Separated Layers</h2>
+              <p>Each tonal shade isolated for individual editing and export.</p>
+            </header>
+
+            <div class="posterize-progress">
+              <div class="posterize-step completed">
+                <div class="posterize-step-number">✓</div>
+                <span>Upload & Edit</span>
+              </div>
+              <div class="posterize-divider"></div>
+              <div class="posterize-step active">
+                <div class="posterize-step-number">2</div>
+                <span>View Layers</span>
+              </div>
+            </div>
+
+            <div class="posterize-layer-toolbar">
+              <button class="posterize-toggle-btn" id="backBtn">
+                ← Back to Editor
+              </button>
+              <button class="posterize-btn posterize-btn-primary" id="downloadAllLayersBtn">
+                Download All Layers (PNG)
+              </button>
+            </div>
+
+            <div class="posterize-layer-info">
+              <strong>Layer Export Info:</strong>
+              Each layer is exported at 4x resolution with a white background. Perfect for importing into
+              Photoshop, Illustrator, or your print workflow.
+            </div>
+
+            <div class="posterize-layer-grid" id="layersContainer"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <div class="personal-cursor" aria-hidden="true">
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 22 22"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g filter="url(#personal-cursor-shadow)">
+          <path
+            d="M7.70778 17.5249L2.56947 2.844C2.28453 2.02988 3.09489 1.2611 3.89289 1.58848L17.9799 7.36777C18.9193 7.75316 18.7528 9.13125 17.7487 9.28187L12.0025 10.1438C11.5989 10.2043 11.2725 10.5041 11.178 10.9011L9.62444 17.4261C9.39316 18.3975 8.03764 18.4673 7.70778 17.5249Z"
+            fill="#FFF"
+            stroke="#FFF"
+            stroke-width="1"
+          />
+        </g>
+        <defs>
+          <filter
+            id="personal-cursor-shadow"
+            x="0.00000977516"
+            y="-0.00000548363"
+            width="21.1108"
+            height="21.7046"
+            filterUnits="userSpaceOnUse"
+            color-interpolation-filters="sRGB"
+          >
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feColorMatrix
+              in="SourceAlpha"
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+              result="hardAlpha"
+            />
+            <feOffset dy="1" />
+            <feGaussianBlur stdDeviation="1.005" />
+            <feComposite in2="hardAlpha" operator="out" />
+            <feColorMatrix
+              type="matrix"
+              values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.28 0"
+            />
+            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_134_2658" />
+            <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_134_2658" result="shape" />
+          </filter>
+        </defs>
+      </svg>
+      <span class="personal-cursor-label">You</span>
+    </div>
+    <div class="return-cursor" aria-hidden="true">
+      <svg class="cursor-icon" width="24" height="28" viewBox="0 0 24 28" fill="none">
+        <path
+          d="M3 2L21 12L13 14L10 22L3 2Z"
+          fill="#29A146"
+          stroke="#FFF"
+          stroke-width="1"
+          style="filter: drop-shadow(0 1px 2.01px rgba(0, 0, 0, 0.28));"
+        />
+      </svg>
+      <span class="return-cursor-label">Kaustubh Mokashi</span>
+      <span class="return-cursor-prompt"></span>
+    </div>
+    <script src="../version.js?v=1.0.8"></script>
+    <script src="../script.js?v=1.0.8"></script>
+    <script>
+      let originalImage = null;
+      let originalCanvas = null;
+      let processedCanvas = null;
+      let originalCtx = null;
+      let processedCtx = null;
+
+      const uploadArea = document.getElementById("uploadArea");
+      const fileInput = document.getElementById("fileInput");
+      const canvasContainer = document.getElementById("canvasContainer");
+      const shadesSlider = document.getElementById("shades");
+      const contrastSlider = document.getElementById("contrast");
+      const brightnessSlider = document.getElementById("brightness");
+      const distributionSelect = document.getElementById("distribution");
+      const edgeSelect = document.getElementById("edge");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const downloadJpgBtn = document.getElementById("downloadJpgBtn");
+      const splitBtn = document.getElementById("splitBtn");
+      const resultBtn = document.getElementById("resultBtn");
+      const vectorizeCheckbox = document.getElementById("vectorize");
+      const edgeThresholdSlider = document.getElementById("edgeThreshold");
+      const edgeThresholdGroup = document.getElementById("edgeThresholdGroup");
+      const edgeThresholdValue = document.getElementById("edgeThresholdValue");
+
+      const nextStepBtn = document.getElementById("nextStepBtn");
+      const layerView = document.getElementById("posterizeLayers");
+      const editorView = document.getElementById("posterizeEditor");
+      const backBtn = document.getElementById("backBtn");
+      const layersContainer = document.getElementById("layersContainer");
+      const downloadAllLayersBtn = document.getElementById("downloadAllLayersBtn");
+
+      const step1Indicator = document.getElementById("step1Indicator");
+      const step2Indicator = document.getElementById("step2Indicator");
+      const uploadFilename = document.getElementById("uploadFilename");
+      const processingIndicator = document.getElementById("processingIndicator");
+      const successMessage = document.getElementById("successMessage");
+
+      let separatedLayers = [];
+      let isProcessing = false;
+      let viewMode = "result";
+
+      const shadesValue = document.getElementById("shadesValue");
+      const contrastValue = document.getElementById("contrastValue");
+      const brightnessValue = document.getElementById("brightnessValue");
+
+      uploadArea.addEventListener("click", () => fileInput.click());
+      uploadArea.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        uploadArea.classList.add("dragover");
+      });
+      uploadArea.addEventListener("dragleave", () => uploadArea.classList.remove("dragover"));
+      uploadArea.addEventListener("drop", (event) => {
+        event.preventDefault();
+        uploadArea.classList.remove("dragover");
+        const file = event.dataTransfer.files[0];
+        if (file && file.type.startsWith("image/")) {
+          loadImage(file);
+        }
+      });
+      fileInput.addEventListener("change", (event) => {
+        const file = event.target.files[0];
+        if (file) {
+          loadImage(file);
+        }
+      });
+
+      shadesSlider.addEventListener("input", (event) => {
+        shadesValue.textContent = event.target.value;
+        processImage();
+      });
+      contrastSlider.addEventListener("input", (event) => {
+        contrastValue.textContent = `${event.target.value}%`;
+        processImage();
+      });
+      brightnessSlider.addEventListener("input", (event) => {
+        brightnessValue.textContent =
+          event.target.value > 0 ? `+${event.target.value}` : event.target.value;
+        processImage();
+      });
+      distributionSelect.addEventListener("change", processImage);
+      edgeSelect.addEventListener("change", processImage);
+      vectorizeCheckbox.addEventListener("change", (event) => {
+        edgeThresholdGroup.style.display = event.target.checked ? "block" : "none";
+        processImage();
+      });
+      edgeThresholdSlider.addEventListener("input", (event) => {
+        edgeThresholdValue.textContent = `${event.target.value}%`;
+        processImage();
+      });
+
+      nextStepBtn.addEventListener("click", () => {
+        generateSeparatedLayers();
+        editorView.style.display = "none";
+        layerView.style.display = "block";
+        window.scrollTo(0, 0);
+      });
+
+      backBtn.addEventListener("click", () => {
+        layerView.style.display = "none";
+        editorView.style.display = "block";
+        window.scrollTo(0, 0);
+      });
+
+      downloadAllLayersBtn.addEventListener("click", downloadAllLayers);
+
+      splitBtn.addEventListener("click", () => {
+        viewMode = "split";
+        splitBtn.classList.add("active");
+        resultBtn.classList.remove("active");
+        updateView();
+      });
+      resultBtn.addEventListener("click", () => {
+        viewMode = "result";
+        resultBtn.classList.add("active");
+        splitBtn.classList.remove("active");
+        updateView();
+      });
+
+      downloadBtn.addEventListener("click", () => downloadImage("png"));
+      downloadJpgBtn.addEventListener("click", () => downloadImage("jpg"));
+
+      function loadImage(file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            originalImage = img;
+            uploadArea.classList.add("has-image");
+            uploadFilename.textContent = `✓ ${file.name}`;
+            initializeCanvases();
+            processImage();
+            downloadBtn.disabled = false;
+            downloadJpgBtn.disabled = false;
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function initializeCanvases() {
+        canvasContainer.innerHTML = "";
+        const maxWidth = 500;
+        const scale = Math.min(1, maxWidth / originalImage.width);
+        const displayWidth = originalImage.width * scale;
+        const displayHeight = originalImage.height * scale;
+
+        originalCanvas = document.createElement("canvas");
+        originalCanvas.width = originalImage.width;
+        originalCanvas.height = originalImage.height;
+        originalCanvas.style.width = `${displayWidth}px`;
+        originalCanvas.style.height = `${displayHeight}px`;
+        originalCtx = originalCanvas.getContext("2d", { willReadFrequently: true });
+        originalCtx.drawImage(originalImage, 0, 0);
+
+        processedCanvas = document.createElement("canvas");
+        processedCanvas.width = originalImage.width;
+        processedCanvas.height = originalImage.height;
+        processedCanvas.style.width = `${displayWidth}px`;
+        processedCanvas.style.height = `${displayHeight}px`;
+        processedCtx = processedCanvas.getContext("2d", { willReadFrequently: true });
+
+        updateView();
+      }
+
+      function updateView() {
+        if (!originalCanvas || !processedCanvas) return;
+        canvasContainer.innerHTML = "";
+        if (viewMode === "split") {
+          const originalWrapper = document.createElement("div");
+          originalWrapper.className = "posterize-canvas-wrapper";
+          originalWrapper.innerHTML = '<div class="posterize-canvas-label">Original</div>';
+          originalWrapper.appendChild(originalCanvas);
+
+          const processedWrapper = document.createElement("div");
+          processedWrapper.className = "posterize-canvas-wrapper";
+          processedWrapper.innerHTML = '<div class="posterize-canvas-label">Posterized</div>';
+          processedWrapper.appendChild(processedCanvas);
+
+          canvasContainer.appendChild(originalWrapper);
+          canvasContainer.appendChild(processedWrapper);
+        } else {
+          const processedWrapper = document.createElement("div");
+          processedWrapper.className = "posterize-canvas-wrapper";
+          processedWrapper.appendChild(processedCanvas);
+          canvasContainer.appendChild(processedWrapper);
+        }
+      }
+
+      function processImage() {
+        if (!originalImage || isProcessing) return;
+        if (originalCanvas.width * originalCanvas.height > 500000) {
+          processingIndicator.classList.add("active");
+        }
+        isProcessing = true;
+
+        setTimeout(() => {
+          const imageData = originalCtx.getImageData(
+            0,
+            0,
+            originalCanvas.width,
+            originalCanvas.height
+          );
+          const data = imageData.data;
+
+          const shades = parseInt(shadesSlider.value, 10);
+          const contrast = parseFloat(contrastSlider.value) / 100;
+          const brightness = parseInt(brightnessSlider.value, 10);
+          const distribution = distributionSelect.value;
+          const edge = edgeSelect.value;
+          const vectorize = vectorizeCheckbox.checked;
+          const edgeThreshold = parseFloat(edgeThresholdSlider.value) / 100;
+
+          const grayData = new Uint8ClampedArray(data.length);
+          for (let i = 0; i < data.length; i += 4) {
+            let gray;
+            switch (distribution) {
+              case "luminosity":
+                gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+                break;
+              case "average":
+                gray = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                break;
+              case "desaturate":
+                gray =
+                  (Math.max(data[i], data[i + 1], data[i + 2]) +
+                    Math.min(data[i], data[i + 1], data[i + 2])) /
+                  2;
+                break;
+              case "red":
+                gray = data[i];
+                break;
+              case "green":
+                gray = data[i + 1];
+                break;
+              case "blue":
+                gray = data[i + 2];
+                break;
+              default:
+                gray = data[i];
+            }
+            grayData[i] = grayData[i + 1] = grayData[i + 2] = gray;
+            grayData[i + 3] = data[i + 3];
+          }
+
+          let edgeData = new Uint8ClampedArray(grayData);
+          if (edge !== "none") {
+            edgeData = applyEdgeEnhancement(grayData, originalCanvas.width, originalCanvas.height, edge);
+          }
+
+          for (let i = 0; i < edgeData.length; i += 4) {
+            edgeData[i] = Math.max(0, Math.min(255, edgeData[i] + brightness));
+            edgeData[i + 1] = Math.max(0, Math.min(255, edgeData[i + 1] + brightness));
+            edgeData[i + 2] = Math.max(0, Math.min(255, edgeData[i + 2] + brightness));
+          }
+
+          const contrastFactor = (259 * (contrast * 255 + 255)) / (255 * (259 - contrast * 255));
+          for (let i = 0; i < edgeData.length; i += 4) {
+            edgeData[i] = Math.max(0, Math.min(255, contrastFactor * (edgeData[i] - 128) + 128));
+            edgeData[i + 1] = Math.max(0, Math.min(255, contrastFactor * (edgeData[i + 1] - 128) + 128));
+            edgeData[i + 2] = Math.max(0, Math.min(255, contrastFactor * (edgeData[i + 2] - 128) + 128));
+          }
+
+          if (vectorize) {
+            edgeData = applyVectorization(edgeData, originalCanvas.width, originalCanvas.height, edgeThreshold);
+          }
+
+          const levels = shades - 1;
+          for (let i = 0; i < edgeData.length; i += 4) {
+            const level = Math.round((edgeData[i] / 255) * levels);
+            const value = (level / levels) * 255;
+            edgeData[i] = edgeData[i + 1] = edgeData[i + 2] = value;
+          }
+
+          const outputImageData = new ImageData(edgeData, originalCanvas.width, originalCanvas.height);
+          processedCtx.putImageData(outputImageData, 0, 0);
+
+          nextStepBtn.disabled = false;
+          step1Indicator.classList.add("completed");
+          processingIndicator.classList.remove("active");
+          isProcessing = false;
+        }, 10);
+      }
+
+      function applyEdgeEnhancement(data, width, height, strength) {
+        const result = new Uint8ClampedArray(data);
+        const kernel = getEdgeKernel(strength);
+        const kernelSize = Math.sqrt(kernel.length);
+        const half = Math.floor(kernelSize / 2);
+
+        for (let y = half; y < height - half; y++) {
+          for (let x = half; x < width - half; x++) {
+            let sum = 0;
+            for (let ky = 0; ky < kernelSize; ky++) {
+              for (let kx = 0; kx < kernelSize; kx++) {
+                const px = x + kx - half;
+                const py = y + ky - half;
+                const idx = (py * width + px) * 4;
+                sum += data[idx] * kernel[ky * kernelSize + kx];
+              }
+            }
+            const idx = (y * width + x) * 4;
+            result[idx] = result[idx + 1] = result[idx + 2] = Math.max(0, Math.min(255, sum));
+          }
+        }
+        return result;
+      }
+
+      function getEdgeKernel(strength) {
+        if (strength === "light") return [0, -1, 0, -1, 5, -1, 0, -1, 0];
+        if (strength === "medium") return [-1, -1, -1, -1, 9, -1, -1, -1, -1];
+        if (strength === "strong") return [-1, -1, -1, -1, 12, -1, -1, -1, -1];
+        return [0, 0, 0, 0, 1, 0, 0, 0, 0];
+      }
+
+      function applyVectorization(data, width, height, threshold) {
+        const edges = detectEdgesSobel(data, width, height);
+        const edgeMap = new Uint8ClampedArray(width * height);
+        const edgeThresholdValue = threshold * 255;
+        for (let i = 0; i < edges.length; i++) {
+          edgeMap[i] = edges[i] > edgeThresholdValue ? 1 : 0;
+        }
+
+        const result = new Uint8ClampedArray(data);
+        const radius = 2;
+        for (let y = radius; y < height - radius; y++) {
+          for (let x = radius; x < width - radius; x++) {
+            const centerIdx = y * width + x;
+            if (edgeMap[centerIdx] === 1) {
+              const idx = centerIdx * 4;
+              result[idx] = result[idx + 1] = result[idx + 2] = data[idx] > 127 ? 255 : 0;
+            }
+          }
+        }
+        return result;
+      }
+
+      function detectEdgesSobel(data, width, height) {
+        const gx = [-1, 0, 1, -2, 0, 2, -1, 0, 1];
+        const gy = [-1, -2, -1, 0, 0, 0, 1, 2, 1];
+        const result = new Uint8ClampedArray(width * height);
+        for (let y = 1; y < height - 1; y++) {
+          for (let x = 1; x < width - 1; x++) {
+            let sumX = 0;
+            let sumY = 0;
+            for (let ky = -1; ky <= 1; ky++) {
+              for (let kx = -1; kx <= 1; kx++) {
+                const idx = ((y + ky) * width + (x + kx)) * 4;
+                const pixel = data[idx];
+                const kernelIndex = (ky + 1) * 3 + (kx + 1);
+                sumX += pixel * gx[kernelIndex];
+                sumY += pixel * gy[kernelIndex];
+              }
+            }
+            const magnitude = Math.sqrt(sumX * sumX + sumY * sumY);
+            result[y * width + x] = magnitude;
+          }
+        }
+        return result;
+      }
+
+      function generateSeparatedLayers() {
+        if (!processedCanvas) return;
+        const shades = parseInt(shadesSlider.value, 10);
+        const levels = shades - 1;
+        separatedLayers = [];
+        layersContainer.innerHTML = "";
+
+        for (let i = 0; i <= levels; i++) {
+          const layerCanvas = document.createElement("canvas");
+          layerCanvas.width = processedCanvas.width;
+          layerCanvas.height = processedCanvas.height;
+          const ctx = layerCanvas.getContext("2d");
+
+          const imageData = processedCtx.getImageData(0, 0, processedCanvas.width, processedCanvas.height);
+          const data = imageData.data;
+
+          for (let p = 0; p < data.length; p += 4) {
+            const level = Math.round((data[p] / 255) * levels);
+            if (level === i) {
+              data[p] = data[p + 1] = data[p + 2] = 0;
+              data[p + 3] = 255;
+            } else {
+              data[p + 3] = 0;
+            }
+          }
+
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, layerCanvas.width, layerCanvas.height);
+          ctx.putImageData(imageData, 0, 0);
+          separatedLayers.push(layerCanvas);
+
+          const layerCard = document.createElement("div");
+          layerCard.className = "posterize-layer-card";
+          layerCard.innerHTML = `
+            <div class="posterize-layer-header">
+              <span class="posterize-layer-name">Layer ${i + 1}</span>
+              <span class="posterize-layer-value">${Math.round((i / levels) * 100)}%</span>
+            </div>
+          `;
+
+          const layerCanvasWrapper = document.createElement("div");
+          layerCanvasWrapper.className = "posterize-layer-canvas-wrapper";
+          const previewCanvas = document.createElement("canvas");
+          previewCanvas.width = layerCanvas.width;
+          previewCanvas.height = layerCanvas.height;
+          const previewCtx = previewCanvas.getContext("2d");
+          previewCtx.drawImage(layerCanvas, 0, 0);
+          previewCanvas.className = "posterize-layer-canvas";
+          layerCanvasWrapper.appendChild(previewCanvas);
+
+          const layerActions = document.createElement("div");
+          layerActions.className = "posterize-layer-actions";
+
+          const downloadLayerBtn = document.createElement("button");
+          downloadLayerBtn.className = "posterize-btn posterize-btn-secondary posterize-btn-small";
+          downloadLayerBtn.textContent = "Download PNG";
+          downloadLayerBtn.addEventListener("click", () => downloadLayer(layerCanvas, i));
+
+          layerActions.appendChild(downloadLayerBtn);
+
+          layerCard.appendChild(layerCanvasWrapper);
+          layerCard.appendChild(layerActions);
+          layersContainer.appendChild(layerCard);
+        }
+      }
+
+      function downloadLayer(canvas, index) {
+        const exportCanvas = document.createElement("canvas");
+        exportCanvas.width = canvas.width * 4;
+        exportCanvas.height = canvas.height * 4;
+        const ctx = exportCanvas.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+        ctx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
+
+        const link = document.createElement("a");
+        link.download = `layer-${index + 1}.png`;
+        link.href = exportCanvas.toDataURL("image/png");
+        link.click();
+
+        showSuccessMessage();
+      }
+
+      function downloadAllLayers() {
+        separatedLayers.forEach((layerCanvas, index) => {
+          downloadLayer(layerCanvas, index);
+        });
+      }
+
+      function downloadImage(format) {
+        if (!processedCanvas) return;
+        const exportCanvas = document.createElement("canvas");
+        exportCanvas.width = processedCanvas.width * 4;
+        exportCanvas.height = processedCanvas.height * 4;
+        const ctx = exportCanvas.getContext("2d");
+        ctx.drawImage(processedCanvas, 0, 0, exportCanvas.width, exportCanvas.height);
+
+        const link = document.createElement("a");
+        link.download = `posterized.${format}`;
+        link.href = exportCanvas.toDataURL(`image/${format}`);
+        link.click();
+
+        showSuccessMessage();
+      }
+
+      function showSuccessMessage() {
+        successMessage.classList.add("show");
+        setTimeout(() => successMessage.classList.remove("show"), 1500);
+      }
+    </script>
+  </body>
+</html>
