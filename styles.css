@@ -681,6 +681,21 @@ body.menu-open .top-menu-toggle span:nth-child(3) {
   overflow: hidden;
 }
 
+.case-study-deck-loading {
+  display: none;
+  width: min(1280px, 100%);
+  margin: 0 auto;
+}
+
+.is-case-study-deck-loading .case-study-deck-loading {
+  display: block;
+}
+
+.is-case-study-deck-loading .case-study-deck-stage,
+.is-case-study-deck-loading .case-study-deck-controls {
+  display: none;
+}
+
 .case-study-deck-shell {
   padding: 120px 0 96px;
   flex-direction: column;
@@ -702,6 +717,33 @@ body.menu-open .top-menu-toggle span:nth-child(3) {
 .case-study-deck {
   width: min(1280px, 100%);
   margin: 0 auto;
+}
+
+.case-study-deck-skeleton-list {
+  display: block;
+}
+
+.case-study-deck-skeleton-card {
+  display: block;
+  min-height: 0;
+  padding: 0;
+  gap: 0;
+  border: none;
+  background: transparent;
+}
+
+.case-study-deck-skeleton-visual {
+  align-items: stretch;
+  min-height: 0;
+  padding: 0;
+}
+
+.case-study-deck-skeleton-frame {
+  width: 100%;
+  height: 720px;
+  margin-top: 0;
+  border-radius: 12px;
+  border: 1px solid rgba(236, 236, 236, 0.16);
 }
 
 .case-study-deck-stage {
@@ -922,6 +964,11 @@ body.menu-open .top-menu-toggle span:nth-child(3) {
     padding-top: 160px;
   }
 
+  .case-study-deck-loading {
+    width: min(100%, 520px);
+    margin: 0 auto;
+  }
+
   .case-study-deck-stage {
     height: auto;
     width: min(100%, 520px);
@@ -947,6 +994,19 @@ body.menu-open .top-menu-toggle span:nth-child(3) {
     align-items: center;
     padding: 0;
     pointer-events: auto;
+  }
+
+  .case-study-deck-skeleton-card {
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .case-study-deck-skeleton-visual {
+    padding: 0;
+  }
+
+  .case-study-deck-skeleton-frame {
+    height: calc((min(100vw, 520px)) * 0.611);
   }
 
   .case-study-deck-button {

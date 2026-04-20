@@ -3443,7 +3443,7 @@ const mapLiveProductRecord = (record = {}) => ({
 });
 
 const buildCaseStudyViewerLink = (rowIndex) =>
-  `./case-studies/paperpal-reference-library.html?sheet=Case%20Studies&row=${encodeURIComponent(
+  `./case-studies/case-study-data.html?sheet=Case%20Studies&row=${encodeURIComponent(
     rowIndex
   )}`;
 
@@ -3582,10 +3582,23 @@ const applyCardData = (card, record) => {
   if (record.project_image_link) {
     const normalizedImage = normalizeDriveImageLink(record.project_image_link);
     card.dataset.projectImage = normalizedImage;
-    const img = card.querySelector(".product-visual-frame img");
+    const visualFrame = card.querySelector(".product-visual-frame");
+    const visualLabel = card.querySelector(".product-visual-label");
+    let img = card.querySelector(".product-visual-frame img");
+
+    if (!img && visualFrame) {
+      img = document.createElement("img");
+      img.className = "product-visual-image product-visual-image-parallax";
+      img.loading = "lazy";
+      visualFrame.prepend(img);
+    }
+
     if (img) {
       img.src = normalizedImage;
-      img.alt = record.title || img.alt;
+      img.alt = record.title || img.alt || "Project preview";
+      if (visualLabel) {
+        visualLabel.hidden = true;
+      }
       if (normalizedImage.includes("drive.google.com")) {
         applyDriveImageFallback(img);
       }

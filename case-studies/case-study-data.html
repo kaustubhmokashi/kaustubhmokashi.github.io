@@ -27,7 +27,7 @@
     <link rel="icon" type="image/svg+xml" href="../favicon.svg?v=1" />
     <link rel="stylesheet" href="../styles.css?v=20" />
   </head>
-  <body class="page-live page-case-study-deck">
+  <body class="page-live page-case-study-deck is-case-study-deck-loading">
     <a class="site-title site-title-link" href="https://www.kaustubhmokashi.com">KAUSTUBH MOKASHI</a>
     <button
       class="top-menu-toggle"
@@ -54,6 +54,15 @@
     </div>
     <main class="page-shell page-shell-centered case-study-deck-shell">
       <section class="case-study-deck" aria-label="Case Study Slide Deck">
+        <div class="live-products-loading case-study-deck-loading" data-case-study-deck-loading aria-live="polite">
+          <div class="live-products-skeleton-list case-study-deck-skeleton-list" aria-hidden="true">
+            <article class="live-products-skeleton-card case-study-deck-skeleton-card">
+              <div class="live-products-skeleton-visual case-study-deck-skeleton-visual">
+                <span class="live-products-skeleton live-products-skeleton-frame case-study-deck-skeleton-frame"></span>
+              </div>
+            </article>
+          </div>
+        </div>
         <div class="case-study-deck-stage" role="region" aria-live="polite" data-case-study-stage>
           <article class="case-study-slide is-active" data-slide="1">
             <img
@@ -158,16 +167,18 @@
       <span class="return-cursor-label">Kaustubh Mokashi</span>
       <span class="return-cursor-prompt"></span>
     </div>
-    <script src="../version.js?v=1.0.11"></script>
-    <script src="../script.js?v=1.0.11"></script>
+    <script src="../version.js?v=1.0.12"></script>
+    <script src="../script.js?v=1.0.12"></script>
     <script>
+      (() => {
       const CASE_STUDY_DECK_WEB_APP_URL =
         "https://script.google.com/macros/s/AKfycbx4Wo4fuWiZGzrm84IV-a8TqlQSekLLXIoiRLH2aKFyRZinyobKYJbBJwEpgEnvyHG3/exec";
 
       const params = new URLSearchParams(window.location.search);
       const requestedSheet = params.get("sheet") || "Case Studies";
       const requestedRow = Number(params.get("row") || 0);
-      const stage = document.querySelector("[data-case-study-stage]");
+      const deckStage = document.querySelector("[data-case-study-stage]");
+      const deckLoading = document.querySelector("[data-case-study-deck-loading]");
       const prevBtn = document.querySelector("[data-deck-prev]");
       const nextBtn = document.querySelector("[data-deck-next]");
       let slides = Array.from(document.querySelectorAll(".case-study-slide"));
@@ -189,9 +200,21 @@
 
       const parsePhotoList = (value) =>
         String(value || "")
-          .split(/\r?\n|,|\|/g)
+          .split(/\r?\n|,|\||;/g)
           .map((item) => normalizeDriveImageLink(item.trim()))
           .filter(Boolean);
+
+      const resolveDeckPhotos = (row) => {
+        const allPhotos = parsePhotoList(row?.case_study_photos || "");
+        if (allPhotos.length > 1) {
+          return allPhotos.slice(1);
+        }
+        if (allPhotos.length === 1) {
+          return allPhotos;
+        }
+        const fallbackImage = normalizeDriveImageLink(row?.project_image_link || "");
+        return fallbackImage ? [fallbackImage] : [];
+      };
 
       const setSlide = (index) => {
         const nextIndex = Math.max(0, Math.min(slides.length - 1, index));
@@ -202,8 +225,8 @@
       };
 
       const rebuildSlides = (photos, title) => {
-        if (!stage || !photos.length) return;
-        stage.innerHTML = "";
+        if (!deckStage || !photos.length) return;
+        deckStage.innerHTML = "";
         const fragment = document.createDocumentFragment();
 
         photos.forEach((photo, index) => {
@@ -220,19 +243,19 @@
           fragment.appendChild(slide);
         });
 
-        stage.appendChild(fragment);
+        deckStage.appendChild(fragment);
         slides = Array.from(document.querySelectorAll(".case-study-slide"));
         activeIndex = 0;
       };
 
       const resizeDeck = () => {
-        if (!stage) return;
+        if (!deckStage) return;
         const baseWidth = 1920;
         const baseHeight = 1080;
-        const stageWidth = stage.clientWidth || baseWidth;
+        const stageWidth = deckStage.clientWidth || baseWidth;
         const scale = stageWidth / baseWidth;
-        stage.style.setProperty("--deck-scale", scale.toFixed(4));
-        stage.style.height = `${baseHeight * scale}px`;
+        deckStage.style.setProperty("--deck-scale", scale.toFixed(4));
+        deckStage.style.height = `${baseHeight * scale}px`;
       };
 
       const bindDeckInteractions = () => {
@@ -253,13 +276,13 @@
         let touchStartX = 0;
         let touchActive = false;
 
-        stage?.addEventListener("touchstart", (event) => {
+        deckStage?.addEventListener("touchstart", (event) => {
           if (event.touches.length !== 1) return;
           touchActive = true;
           touchStartX = event.touches[0].clientX;
         });
 
-        stage?.addEventListener("touchend", (event) => {
+        deckStage?.addEventListener("touchend", (event) => {
           if (!touchActive) return;
           const touchEndX = event.changedTouches[0]?.clientX || 0;
           const deltaX = touchEndX - touchStartX;
@@ -276,6 +299,8 @@
 
       const loadCaseStudyDeck = async () => {
         if (!requestedRow) {
+          document.body.classList.remove("is-case-study-deck-loading");
+          deckLoading?.setAttribute("hidden", "");
           resizeDeck();
           bindDeckInteractions();
           return;
@@ -283,7 +308,7 @@
 
         try {
           const response = await fetch(
-            `${CASE_STUDY_DECK_WEB_APP_URL}?sheet=${encodeURIComponent(requestedSheet)}&row=${encodeURIComponent(requestedRow)}`,
+            `${CASE_STUDY_DECK_WEB_APP_URL}?sheet=${encodeURIComponent(requestedSheet)}`,
             { method: "GET", cache: "no-store" }
           );
 
@@ -292,22 +317,30 @@
           }
 
           const payload = await response.json();
-          const row = payload?.row || null;
+          const rows = Array.isArray(payload?.rows) ? payload.rows : [];
+          const row =
+            rows.find((item) => Number(item?.row_index || 0) === requestedRow) ||
+            rows[requestedRow - 1] ||
+            null;
+
           if (!payload?.success || !row) {
-            throw new Error(payload?.error || "Case study row not found");
+            throw new Error("Case study row not found");
           }
 
           const title = row.title || "Case Study";
-          const photos = parsePhotoList(row.case_study_photos || "");
-          if (photos.length) {
-            rebuildSlides(photos, title);
+          const slideshowPhotos = resolveDeckPhotos(row);
+          if (slideshowPhotos.length) {
+            rebuildSlides(slideshowPhotos, title);
           }
 
           document.title = `${title} | Kaustubh Mokashi`;
           document.querySelector('meta[property="og:title"]')?.setAttribute("content", `${title} — Case Study`);
           document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", `${title} — Case Study`);
         } catch (error) {
+          console.error("Case study deck failed to load", error);
         } finally {
+          document.body.classList.remove("is-case-study-deck-loading");
+          deckLoading?.setAttribute("hidden", "");
           resizeDeck();
           bindDeckInteractions();
         }
@@ -315,6 +348,7 @@
 
       window.addEventListener("resize", resizeDeck);
       loadCaseStudyDeck();
+      })();
     </script>
   </body>
 </html>
